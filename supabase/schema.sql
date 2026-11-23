@@ -375,6 +375,79 @@ end $$;
 grant execute on function public.ajouter_piece_jointe(text, text, uuid, text, text, text, uuid) to anon, authenticated;
 grant execute on function public.supprimer_piece_jointe(text, text, uuid) to anon, authenticated;
 
+-- ---------- Notifications push (téléphone / ordinateur) ----------
+-- Qui veut être prévenu : une ligne par appareil abonné. Illisible depuis le site.
+create table if not exists public.abonnements_push (
+  endpoint  text primary key check (endpoint like 'https://%' and char_length(endpoint) <= 1000),
+  p256dh    text not null check (char_length(p256dh) <= 200),
+  auth      text not null check (char_length(auth) <= 100),
+  prenom    text not null,
+  cree_le   timestamptz not null default now()
+);
+alter table public.abonnements_push enable row level security;
+revoke all on public.abonnements_push from anon, authenticated;
+
+-- Devoirs déjà annoncés (pour ne jamais envoyer deux fois la même notification)
+alter table public.livrables add column if not exists notifie_le timestamptz;
+-- Les devoirs déjà présents ne sont pas annoncés à l'installation
+update public.livrables set notifie_le = cree_le where notifie_le is null and cree_le < now() - interval '1 minute';
+-- Secret partagé avec la fonction « notifier » (haché, comme le code du groupe)
+alter table public.config_privee add column if not exists notif_hash text;
+
+-- Un appareil s'abonne (ou met à jour le prénom associé)
+create or replace function public.enregistrer_abonnement(p_code text, p_prenom text, p_endpoint text, p_p256dh text, p_auth text)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+begin
+  perform public._controle(p_code, p_prenom);
+  insert into public.abonnements_push (endpoint, p256dh, auth, prenom)
+  values (p_endpoint, p_p256dh, p_auth, trim(p_prenom))
+  on conflict (endpoint) do update set p256dh = excluded.p256dh, auth = excluded.auth, prenom = excluded.prenom;
+end $$;
+
+-- Un appareil se désabonne (connaître son adresse d'abonnement suffit : elle est unique et secrète)
+create or replace function public.desabonner(p_endpoint text)
+returns void language sql security definer set search_path = public as $$
+  delete from public.abonnements_push where endpoint = p_endpoint;
+$$;
+
+-- Vérifie le secret de la fonction « notifier »
+create or replace function public._notif_ok(p_secret text) returns boolean
+language sql stable security definer set search_path = public, extensions as $$
+  select exists (select 1 from public.config_privee
+                 where notif_hash is not null and notif_hash = extensions.crypt(coalesce(p_secret, ''), notif_hash));
+$$;
+revoke execute on function public._notif_ok(text) from public, anon, authenticated;
+
+-- Utilisé par la fonction « notifier » : renvoie les devoirs pas encore annoncés
+-- (ajoutés il y a moins d'une heure) en les marquant « annoncés », et la liste des abonnés.
+create or replace function public.prendre_notifications(p_secret text)
+returns jsonb language plpgsql security definer set search_path = public, extensions as $$
+declare v_devoirs jsonb; v_abonnes jsonb;
+begin
+  if not public._notif_ok(p_secret) then raise exception 'Accès refusé'; end if;
+  with marques as (
+    update public.livrables set notifie_le = now()
+    where notifie_le is null and supprime_le is null and cree_le > now() - interval '1 hour'
+    returning id, titre, cree_par, date_limite, sans_heure
+  )
+  select coalesce(jsonb_agg(to_jsonb(marques)), '[]'::jsonb) into v_devoirs from marques;
+  select coalesce(jsonb_agg(jsonb_build_object('endpoint', endpoint, 'p256dh', p256dh, 'auth', auth, 'prenom', prenom)), '[]'::jsonb)
+    into v_abonnes from public.abonnements_push;
+  return jsonb_build_object('livrables', v_devoirs, 'abonnements', v_abonnes);
+end $$;
+
+create or replace function public.supprimer_abonnement_expire(p_secret text, p_endpoint text)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if not public._notif_ok(p_secret) then raise exception 'Accès refusé'; end if;
+  delete from public.abonnements_push where endpoint = p_endpoint;
+end $$;
+
+grant execute on function public.enregistrer_abonnement(text, text, text, text, text) to anon, authenticated;
+grant execute on function public.desabonner(text) to anon, authenticated;
+grant execute on function public.prendre_notifications(text) to anon, authenticated;
+grant execute on function public.supprimer_abonnement_expire(text, text) to anon, authenticated;
+
 -- ---------- Temps réel ----------
 -- (n'ajoute que les tables pas encore inscrites : on peut relancer ce fichier sans erreur)
 do $$

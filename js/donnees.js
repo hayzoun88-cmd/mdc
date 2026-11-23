@@ -258,6 +258,22 @@
       return data;
     },
 
+    // ---------- Notifications push ----------
+    /** Enregistre (ou met à jour) l'abonnement push de cet appareil, au prénom de la personne connectée. */
+    async enregistrerAbonnement(code, prenom, abonnement) {
+      if (!modeSupabase) return;
+      const { error } = await client.rpc("enregistrer_abonnement", { p_code: code, p_prenom: prenom,
+        p_endpoint: abonnement.endpoint, p_p256dh: abonnement.keys.p256dh, p_auth: abonnement.keys.auth });
+      if (error) throw erreur(error);
+    },
+
+    /** Retire l'abonnement push de cet appareil. */
+    async desabonner(endpoint) {
+      if (!modeSupabase) return;
+      const { error } = await client.rpc("desabonner", { p_endpoint: endpoint });
+      if (error) throw erreur(error);
+    },
+
     /** Appelle `rappel()` dès qu'un autre étudiant modifie quelque chose (temps réel). */
     ecouter(rappel) {
       if (!modeSupabase) {

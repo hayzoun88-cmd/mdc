@@ -11,7 +11,14 @@
   <script>
     try { const t = localStorage.getItem("mdc_theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
   </script>
-  <link rel="stylesheet" href="css/style.css?v=3">
+  <!-- Installation sur l'écran d'accueil (nécessaire pour les notifications sur iPhone) -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="MDC G1">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body>
   <!-- ===== En-tête ===== -->
@@ -206,6 +213,12 @@
     </div>
   </dialog>
 
+  <!-- ===== Fenêtre : aide (notifications sur iPhone, notifications bloquées…) ===== -->
+  <dialog id="dlg-aide" class="dialogue">
+    <div id="aide-contenu"></div>
+    <div class="actions"><button type="button" class="btn btn-principal" data-fermer>J'ai compris</button></div>
+  </dialog>
+
   <!-- ===== Fenêtre : confirmation ===== -->
   <dialog id="dlg-confirm" class="dialogue">
     <p id="confirm-texte"></p>
@@ -219,8 +232,8 @@
 
   <!-- Bibliothèque Supabase (version figée) puis nos scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-  <script src="js/config.js?v=3"></script>
-  <script src="js/donnees.js?v=3"></script>
-  <script src="js/app.js?v=3"></script>
+  <script src="js/config.js?v=4"></script>
+  <script src="js/donnees.js?v=4"></script>
+  <script src="js/app.js?v=4"></script>
 </body>
 </html>

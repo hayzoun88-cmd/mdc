@@ -12,9 +12,10 @@ Application web pour le **groupe 1 (G1)** de la promo **MDC 2025-2027 (ISTEF)**.
   (le même pour tout le monde). C'est mémorisé sur l'appareil. Bouton 👤 en haut pour changer de prénom.
 - **Ajout collaboratif** : tout le monde peut ajouter, modifier ou supprimer un devoir. Tout le monde voit les changements en temps réel.
   Chaque devoir affiche **« Ajouté par … »** (le prénom de la personne connectée qui l'a créé).
-- **Nouveaux devoirs** : quand quelqu'un ajoute un devoir, un message s'affiche (« Ema a ajouté … ») et un bandeau
-  « 🆕 X nouveaux devoirs depuis ta dernière visite » reste en haut jusqu'au clic sur « OK, vu ».
-  Le bouton « 🔔 Me prévenir… » active aussi les notifications du navigateur (quand le site est ouvert en arrière-plan).
+- **Nouveaux devoirs** : bandeau « 🆕 X nouveaux devoirs depuis ta dernière visite » (jusqu'au clic sur « OK, vu »),
+  message dans l'appli, et **notifications push** sur le téléphone **même appli fermée** : bouton
+  « 🔔 Me prévenir quand quelqu'un ajoute un devoir » en haut de l'onglet Devoirs.
+  Sur **iPhone** (iOS 16.4+), il faut d'abord ajouter le site à l'écran d'accueil (Partager → Sur l'écran d'accueil).
 - **Date limite facultative** : sans date = devoir sans échéance (oral, à préparer…), rangé dans « Sans date limite » ;
   sans heure = « à faire dans la journée ».
 - **Compléter la consigne** : sous chaque devoir (y compris les CC officiels), n'importe qui peut ajouter un complément
@@ -46,6 +47,9 @@ Fonctionne sur téléphone et sur ordinateur, avec un mode sombre (bouton ◐).
 | `data/classe.json` | **Les prénoms de la classe** (liste de connexion et des groupes) |
 | `outils/import_planning.py` | Le script qui transforme le PDF en `planning.json` |
 | `supabase/schema.sql` | La création de la base (à coller une fois dans Supabase) |
+| `supabase/notifications.sql` | Le déclencheur qui appelle la fonction d'envoi des notifications |
+| `supabase/functions/notifier/` | La fonction Supabase qui envoie les notifications push |
+| `sw.js`, `manifest.webmanifest`, `icons/` | Réception des notifications et installation sur l'écran d'accueil |
 
 ### Ce qui est public, ce qui ne l'est pas
 
@@ -209,6 +213,21 @@ Leurs titres commencent par **[Exemple]**.
 delete from public.livrables where supprime_le is not null and supprime_le < now() - interval '30 days';
 ```
 (supprime ce qui est dans la corbeille depuis plus de 30 jours)
+
+## Notifications push : comment ça marche
+
+1. Un étudiant touche 🔔 : son appareil s'abonne (table `abonnements_push`, illisible depuis le site).
+2. Quand un devoir est ajouté, la base appelle la fonction Supabase **notifier** (déclencheur de `notifications.sql`).
+3. La fonction envoie la notification à tous les abonnés, sauf à la personne qui a ajouté le devoir.
+
+**Clés** : la clé publique VAPID est dans `js/config.js`. La clé privée et le secret ne sont **que** dans
+Supabase (Edge Functions → notifier → Secrets) et dans le fichier local non publié `.cles-notifications.json`.
+
+**Republier la fonction** après une modification (depuis le Codespace, une fois connecté avec `npx supabase@2.20.12 login`) :
+```bash
+npx supabase@2.20.12 functions deploy notifier --project-ref wfnddfzbsgkidvztukhk --no-verify-jwt --use-api
+```
+**Si ça ne marche plus** : Supabase → Edge Functions → notifier → **Logs** affiche les erreurs.
 
 ## Pièces jointes
 

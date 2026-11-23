@@ -471,7 +471,6 @@
           <ul>${nouveaux.slice(0, 5).map(l => `<li>${esc(l.titre)}${l.cree_par ? ` — ajouté par ${esc(l.cree_par)}` : ""}</li>`).join("")}</ul></div>
         <button type="button" class="btn btn-petit" id="btn-vu">OK, vu ✓</button>`
       : "";
-    $("#btn-notif").hidden = !("Notification" in window) || Notification.permission !== "default";
 
     const n7 = livrablesVisibles().filter(l => !etat.faits[l.id] && prochaineEcheance(l) && prochaineEcheance(l) - now < 7 * 86400000).length;
     $("#pastille-livrables").hidden = !n7;
@@ -541,6 +540,7 @@
         ecrireLocal("mdc_auth", auth); ecrireLocal("mdc_prenom", prenom);
         dlg.close(); connexionEnCours = null;
         majEnteteMoi(); renderLivrables(); renderEspace();
+        if (etat.pushActif) initPush(); // l'abonnement suit le nouveau prénom
         resolve(auth);
       };
     });
@@ -849,17 +849,97 @@
   // =====================================================================
   //  CHARGEMENT ET ÉVÉNEMENTS
   // =====================================================================
+  // =====================================================================
+  //  NOTIFICATIONS PUSH : prévenu même quand le site est fermé
+  // =====================================================================
+  const pushPossible = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+  const estIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const estInstallee = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  let swEnregistrement = null; // le « service worker » (sw.js) qui reçoit les notifications
+
+  function cleEnOctets(b64) {
+    const s = atob(b64.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((b64.length + 3) % 4));
+    return Uint8Array.from(s, c => c.charCodeAt(0));
+  }
+
+  function afficherAide(html) {
+    $("#aide-contenu").innerHTML = html;
+    $("#dlg-aide").showModal();
+  }
+
+  /** Démarrage : installe le service worker et regarde si cet appareil est déjà abonné. */
+  async function initPush() {
+    try {
+      if ("serviceWorker" in navigator) swEnregistrement = await navigator.serviceWorker.register("sw.js");
+      const ab = swEnregistrement && swEnregistrement.pushManager ? await swEnregistrement.pushManager.getSubscription() : null;
+      etat.pushActif = Boolean(ab) && Notification.permission === "granted";
+      // Garde le prénom à jour côté serveur (utile si on a changé de prénom)
+      if (etat.pushActif && moi()) {
+        const auth = lireLocal("mdc_auth", null);
+        Donnees.enregistrerAbonnement(auth.code, auth.prenom, ab.toJSON()).catch(() => {});
+      }
+    } catch (e) { /* navigateur sans service worker : pas de push */ }
+    majBoutonNotif();
+  }
+
+  function majBoutonNotif() {
+    const b = $("#btn-notif");
+    if (Donnees.mode === "demo" || !CONFIG.VAPID_PUBLIQUE) { b.hidden = true; return; }
+    b.hidden = false;
+    if (etat.pushActif) b.textContent = "🔔 Notifications activées sur cet appareil · désactiver";
+    else if (estIOS && !estInstallee()) b.textContent = "🔔 Recevoir les notifications (iPhone : voir comment)";
+    else if (!pushPossible()) b.hidden = true;
+    else if (Notification.permission === "denied") b.textContent = "🔕 Notifications bloquées · voir comment les réactiver";
+    else b.textContent = "🔔 Me prévenir quand quelqu'un ajoute un devoir";
+  }
+
+  async function clicNotifications() {
+    // Déjà activées → proposer de les couper
+    if (etat.pushActif) {
+      if (!(await confirmer("Ne plus recevoir de notifications sur cet appareil ?", "Désactiver"))) return;
+      try {
+        const ab = await swEnregistrement.pushManager.getSubscription();
+        if (ab) { await Donnees.desabonner(ab.endpoint).catch(() => {}); await ab.unsubscribe(); }
+      } catch (e) { /* déjà désabonné */ }
+      etat.pushActif = false; majBoutonNotif(); toast("Notifications désactivées.");
+      return;
+    }
+    // iPhone / iPad : il faut d'abord installer le site sur l'écran d'accueil
+    if (estIOS && !estInstallee()) {
+      return afficherAide(`<h2>🔔 Notifications sur iPhone</h2>
+        <p>Sur iPhone, Apple n'envoie les notifications qu'aux sites <strong>ajoutés à l'écran d'accueil</strong> :</p>
+        <ol><li>Ouvre ce site dans <strong>Safari</strong>.</li>
+        <li>Touche le bouton <strong>Partager</strong> (carré avec une flèche vers le haut).</li>
+        <li>Choisis <strong>« Sur l'écran d'accueil »</strong>, puis <strong>Ajouter</strong>.</li>
+        <li>Ouvre l'appli <strong>MDC G1</strong> depuis la nouvelle icône, puis touche à nouveau ce bouton 🔔.</li></ol>
+        <p class="aide">Il faut iOS 16.4 ou plus récent.</p>`);
+    }
+    if (!pushPossible() || !swEnregistrement) return toast("Ce navigateur ne gère pas les notifications. Essaie Chrome ou Safari.");
+    if (Notification.permission === "denied") {
+      return afficherAide(`<h2>🔕 Notifications bloquées</h2>
+        <p>Tu as refusé les notifications pour ce site. Pour les réactiver :</p>
+        <ul><li><strong>Sur ordinateur</strong> : clique sur le cadenas 🔒 à gauche de l'adresse → Notifications → Autoriser, puis recharge la page.</li>
+        <li><strong>Sur Android</strong> : ⋮ → Paramètres → Paramètres des sites → Notifications → autoriser ce site.</li>
+        <li><strong>Sur iPhone</strong> : Réglages → Notifications → MDC G1 → Autoriser.</li></ul>`);
+    }
+    try {
+      if ((await Notification.requestPermission()) !== "granted") return toast("Notifications non autorisées.");
+      const ab = await swEnregistrement.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: cleEnOctets(CONFIG.VAPID_PUBLIQUE) });
+      const ok = await avecAutorisation(auth => Donnees.enregistrerAbonnement(auth.code, auth.prenom, ab.toJSON()));
+      etat.pushActif = ok;
+      majBoutonNotif();
+      if (ok) toast("🔔 C'est activé ! Tu seras prévenu(e) même quand l'appli est fermée.");
+    } catch (e) {
+      toast("Activation impossible : " + e.message);
+    }
+  }
+
   /** Prévient quand un autre étudiant ajoute un devoir (message dans l'appli + notification du téléphone/ordinateur). */
   function prevenirNouveaux(avant) {
     const arrives = etat.livrables.filter(l => !avant.has(l.id) && !l.supprime_le && !memeNom(l.cree_par, moi()));
     for (const l of arrives) {
       const texte = `${l.cree_par || "Quelqu'un"} a ajouté « ${l.titre} »`;
-      toast("📌 " + texte);
-      try {
-        if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
-          new Notification("Nouveau devoir – MDC G1", { body: texte, tag: "devoir-" + l.id });
-        }
-      } catch (e) { /* certains téléphones n'affichent les notifications que pour les applis installées */ }
+      toast("📌 " + texte); // (la notification du téléphone arrive, elle, par le push)
     }
   }
 
@@ -943,13 +1023,7 @@
       etat.vuJusqua = new Date().toISOString(); ecrireLocal("mdc_vu", etat.vuJusqua);
       renderResume(); renderLivrables();
     });
-    $("#btn-notif").addEventListener("click", async () => {
-      try {
-        const r = await Notification.requestPermission();
-        toast(r === "granted" ? "🔔 Notifications activées ✔" : "Notifications refusées (modifiable dans les réglages du navigateur).");
-      } catch (e) { toast("Ce navigateur ne gère pas les notifications."); }
-      renderResume();
-    });
+    $("#btn-notif").addEventListener("click", clicNotifications);
 
     // Compléments à la consigne
     document.addEventListener("input", e => {
@@ -1052,6 +1126,7 @@
     if (!etat.vuJusqua) { etat.vuJusqua = new Date().toISOString(); ecrireLocal("mdc_vu", etat.vuJusqua); }
     majEnteteMoi();
     autorisation(); // connexion obligatoire (une seule fois par appareil)
+    initPush();
     await recharger();
   }
 

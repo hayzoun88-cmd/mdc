@@ -15,3 +15,9 @@ requete-code-supabase.txt
 correctif-lecture-supabase.txt
 menage-supabase.txt
 mise-a-jour-supabase.txt
+message-classe.txt
+
+# Clés privées des notifications push : ne jamais publier
+.cles-notifications.json
+activer-notifications-supabase.txt
+connexion-supabase-terminal.txt
