@@ -21,3 +21,9 @@ message-classe.txt
 .cles-notifications.json
 activer-notifications-supabase.txt
 connexion-supabase-terminal.txt
+
+# Exception : les icônes de l'appli doivent être publiées
+!icons/*.png
+
+# Fichiers temporaires de la ligne de commande Supabase
+supabase/.temp/
