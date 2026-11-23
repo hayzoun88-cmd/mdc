@@ -66,6 +66,9 @@ drop policy if exists "lecture publique" on public.historique;
 create policy "lecture publique" on public.historique for select to anon, authenticated using (true);
 -- config_privee : aucune règle => illisible depuis le site.
 
+-- Lecture seule pour le site (les nouveaux projets Supabase ne la donnent plus automatiquement)
+grant usage on schema public to anon, authenticated;
+grant select on public.livrables, public.historique to anon, authenticated;
 revoke insert, update, delete on public.livrables, public.historique from anon, authenticated;
 revoke all on public.config_privee from anon, authenticated;
 
@@ -170,6 +173,7 @@ create table if not exists public.commentaires (
 alter table public.commentaires enable row level security;
 drop policy if exists "lecture publique" on public.commentaires;
 create policy "lecture publique" on public.commentaires for select to anon, authenticated using (true);
+grant select on public.commentaires to anon, authenticated;
 revoke insert, update, delete on public.commentaires from anon, authenticated;
 
 create or replace function public.ajouter_commentaire(p_code text, p_prenom text, p_livrable text, p_texte text)
@@ -211,6 +215,7 @@ create table if not exists public.pieces_jointes (
 alter table public.pieces_jointes enable row level security;
 drop policy if exists "lecture publique" on public.pieces_jointes;
 create policy "lecture publique" on public.pieces_jointes for select to anon, authenticated using (true);
+grant select on public.pieces_jointes to anon, authenticated;
 revoke insert, update, delete on public.pieces_jointes from anon, authenticated;
 
 -- (les fonctions qui touchent aux équipes sont plus bas, après la création des tables d'équipes)
@@ -240,6 +245,7 @@ drop function if exists public.supprimer_equipe(text, text, uuid);
 alter table public.equipes enable row level security;
 drop policy if exists "lecture publique" on public.equipes;
 create policy "lecture publique" on public.equipes for select to anon, authenticated using (true);
+grant select on public.equipes to anon, authenticated;
 revoke insert, update, delete on public.equipes from anon, authenticated;
 
 -- Le prénom fait-il partie de l'équipe ? (comparaison sans tenir compte des majuscules)

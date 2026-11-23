@@ -11,6 +11,6 @@
 //  les livrables sont enregistrés seulement dans votre navigateur.
 // =====================================================================
 window.CONFIG = {
-  SUPABASE_URL: "",       // ex. "https://abcdefghijkl.supabase.co"
-  SUPABASE_ANON_KEY: "",  // ex. "eyJhbGciOi..." (clé "anon" / "publishable")
+  SUPABASE_URL: "https://wfnddfzbsgkidvztukhk.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_wZBdwScjcBCLzPC-8OmywQ_g8bjuHg5", // clé publique "publishable" (jamais la clé secrète)
 };
