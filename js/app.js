@@ -43,6 +43,8 @@
     commentaires: [],     // compléments à la consigne, laissés par les étudiants
     commOuvert: null,     // devoir dont le champ « Compléter la consigne » est ouvert
     brouillons: {},       // texte en cours de saisie, par devoir (pour ne pas le perdre)
+    vuJusqua: lireLocal("mdc_vu", null), // date de la dernière visite : les devoirs ajoutés après sont « nouveaux »
+    premierChargement: true,
     espace: { livrable: null }, // livrable dont la fenêtre « Groupe » est ouverte
     faits: lireLocal("mdc_faits", {}),
     mode: "semaine", ref: depuisIso(jourOuvre()), jourSel: jourOuvre(), nbListe: 25,
@@ -97,7 +99,7 @@
     const r = [];
     for (const l of livrablesVisibles()) {
       if (l.officiel) continue;
-      if (iso(new Date(l.date_limite)) === ds) r.push({ l, quand: new Date(l.date_limite), soutenance: false });
+      if (l.date_limite && iso(new Date(l.date_limite)) === ds) r.push({ l, quand: new Date(l.date_limite), soutenance: false });
       if (l.date_soutenance && iso(new Date(l.date_soutenance)) === ds) r.push({ l, quand: new Date(l.date_soutenance), soutenance: true });
     }
     return r.sort((a, b) => a.quand - b.quand);
@@ -132,7 +134,7 @@
       h += `<div class="creneau eval"><div class="heure">Journée</div><div><div class="nom">${esc(per.titre)}</div></div></div>`;
     }
     for (const { l, quand, soutenance } of rendusDuJour(ds)) {
-      h += `<div class="creneau rendu-perso"><div class="heure">${heure(quand)}</div>
+      h += `<div class="creneau rendu-perso"><div class="heure">${l.sans_heure && !soutenance ? "Journée" : heure(quand)}</div>
         <div><div class="nom">${soutenance ? "🎤 Soutenance" : "📌 À rendre"} : ${esc(l.titre)}</div>
         <div class="detail">${esc(matiere(l.matiere).nom)} · ${esc(TYPES[l.type] || l.type)}${etat.faits[l.id] ? " · ✔ fait" : ""}</div></div></div>`;
     }
@@ -205,7 +207,8 @@
 
   function vueListe() {
     $("#titre-periode").textContent = "Prochains cours et échéances";
-    const fin = [etat.planning.meta.fin, ...livrablesVisibles().map(l => iso(new Date(l.date_soutenance || l.date_limite)))].sort().pop();
+    const fin = [etat.planning.meta.fin, ...livrablesVisibles().filter(l => l.date_soutenance || l.date_limite)
+      .map(l => iso(new Date(l.date_soutenance || l.date_limite)))].sort().pop();
     let d = new Date(), h = "", n = 0, entreprise = [];
     const flushEntreprise = () => {
       if (entreprise.length) {
@@ -269,13 +272,19 @@
     return h < 48 ? "rouge" : h < 168 ? "orange" : "vert";
   }
 
-  function compteRebours(date) {
+  /** « aujourd'hui 14h00 », « demain », « dans 3 jours »… (sansHeure : sans l'heure) */
+  function compteRebours(date, sansHeure = false) {
     const n = ecartJours(date);
+    const h = sansHeure ? "" : " " + heure(date);
     if (n < 0) return n === -1 ? "hier" : `il y a ${-n} jours`;
-    if (n === 0) return `aujourd'hui ${heure(date)}`;
-    if (n === 1) return `demain ${heure(date)}`;
+    if (n === 0) return `aujourd'hui${h}`;
+    if (n === 1) return `demain${h}`;
     return `dans ${n} jours`;
   }
+
+  /** Devoir ajouté par quelqu'un d'autre depuis ma dernière visite ? */
+  const estNouveau = l => !l.officiel && l.cree_le && etat.vuJusqua && new Date(l.cree_le) > new Date(etat.vuJusqua)
+    && !memeNom(l.cree_par, moi());
 
   const lienSur = u => /^https?:\/\//i.test(u || "");
 
@@ -284,8 +293,17 @@
     const prochaine = prochaineEcheance(l);
     const fait = Boolean(etat.faits[l.id]);
     const u = corbeille || archive || !prochaine ? "" : "urg-" + urgence(prochaine);
-    const dl = new Date(l.date_limite);
-    const quand = d => fmt(d, { weekday: "long", day: "numeric", month: "long", year: "numeric" }) + " à " + heure(d);
+    const dl = l.date_limite ? new Date(l.date_limite) : null;
+    const jour = d => fmt(d, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    const quand = d => jour(d) + " à " + heure(d);
+    // Ligne « quand » : avec heure, « dans la journée », ou sans date
+    const ligneDate = !dl ? "🗓 Sans date limite"
+      : l.sans_heure ? `🗓 À faire pour le ${jour(dl)} (dans la journée)`
+      : `🗓 ${l.type === "examen" ? "Le" : "À rendre le"} ${quand(dl)}`;
+    const soutenanceProchaine = prochaine && (!dl || prochaine.getTime() !== dl.getTime());
+    const chip = corbeille ? ""
+      : prochaine ? `<span class="compte">${soutenanceProchaine ? "Soutenance " : ""}${compteRebours(prochaine, l.sans_heure && !soutenanceProchaine)}</span>`
+      : !dl && !l.date_soutenance ? '<span class="compte">Sans date</span>' : "";
     const actions = corbeille
       ? `<button class="btn btn-petit" data-restaurer="${esc(l.id)}">↺ Restaurer</button>`
       : l.officiel ? "" : `<button class="btn btn-petit" data-equipes="${esc(l.id)}">👥 Groupe</button>
@@ -298,14 +316,15 @@
           <div class="l-matiere"><span class="pt" style="--c:${esc(m.couleur)}"></span>${esc(m.nom)}</div>
           <div class="l-titre">${esc(l.titre)}</div>
         </div>
-        ${prochaine && !corbeille ? `<span class="compte">${prochaine.getTime() !== dl.getTime() ? "Soutenance " : ""}${compteRebours(prochaine)}</span>` : ""}
+        ${chip}
       </div>
       <div class="puces">
         <span class="puce">${esc(TYPES[l.type] || l.type)}</span>
         ${l.officiel ? '<span class="puce officiel">Planning officiel</span>' : ""}
+        ${!corbeille && estNouveau(l) ? '<span class="puce nouveau">🆕 Nouveau</span>' : ""}
       </div>
       <div class="l-infos">
-        <div>🗓 ${l.type === "examen" ? "Le" : "À rendre le"} ${quand(dl)}</div>
+        <div>${ligneDate}</div>
         ${l.date_soutenance ? `<div>🎤 Soutenance le ${quand(new Date(l.date_soutenance))}</div>` : ""}
         ${l.mode_rendu ? `<div>📤 ${esc(l.mode_rendu)}</div>` : ""}
         ${l.cree_par ? `<div>✍️ Ajouté par ${esc(l.cree_par)}</div>` : ""}
@@ -402,9 +421,16 @@
 
   function renderListeLivrables() {
     const filtres = filtrer(livrablesVisibles());
+    const sansDate = l => !l.date_limite && !l.date_soutenance;
     const aVenir = filtres.filter(prochaineEcheance).sort((a, b) => prochaineEcheance(a) - prochaineEcheance(b));
-    const archives = filtres.filter(l => !prochaineEcheance(l)).sort((a, b) => new Date(b.date_limite) - new Date(a.date_limite));
-    $("#liste-livrables").innerHTML = aVenir.length ? aVenir.map(l => htmlLivrable(l)).join("") : '<p class="vide carte">Aucun devoir à venir avec ces filtres.</p>';
+    // Sans date : restent visibles tant qu'ils ne sont pas cochés « fait »
+    const sansDateActifs = filtres.filter(l => sansDate(l) && !etat.faits[l.id]);
+    const archives = filtres.filter(l => !prochaineEcheance(l) && !(sansDate(l) && !etat.faits[l.id]))
+      .sort((a, b) => new Date(b.date_limite || b.cree_le || 0) - new Date(a.date_limite || a.cree_le || 0));
+    $("#liste-livrables").innerHTML = (aVenir.length || sansDateActifs.length)
+      ? aVenir.map(l => htmlLivrable(l)).join("")
+        + (sansDateActifs.length ? `<h3 class="titre-section">Sans date limite</h3>` + sansDateActifs.map(l => htmlLivrable(l)).join("") : "")
+      : '<p class="vide carte">Aucun devoir à venir avec ces filtres.</p>';
     $("#nb-archives").textContent = `(${archives.length})`;
     $("#liste-archives").innerHTML = archives.map(l => htmlLivrable(l, { archive: true })).join("") || '<p class="vide">Rien d\'archivé.</p>';
     const corb = etat.livrables.filter(l => l.supprime_le);
@@ -436,6 +462,16 @@
     $("#titre-demain").innerHTML = `Demain <small class="aide">· ${fmt(ajoute(now, 1), { weekday: "long", day: "numeric", month: "long" })}</small>`;
     $("#bloc-aujourdhui").innerHTML = htmlJour(auj());
     $("#bloc-demain").innerHTML = htmlJour(demain());
+
+    // Nouveaux devoirs depuis ma dernière visite
+    const nouveaux = livrablesVisibles().filter(estNouveau);
+    $("#bandeau-nouveaux").hidden = !nouveaux.length;
+    $("#bandeau-nouveaux").innerHTML = nouveaux.length
+      ? `<div>🆕 ${nouveaux.length} nouveau${nouveaux.length > 1 ? "x" : ""} devoir${nouveaux.length > 1 ? "s" : ""} depuis ta dernière visite
+          <ul>${nouveaux.slice(0, 5).map(l => `<li>${esc(l.titre)}${l.cree_par ? ` — ajouté par ${esc(l.cree_par)}` : ""}</li>`).join("")}</ul></div>
+        <button type="button" class="btn btn-petit" id="btn-vu">OK, vu ✓</button>`
+      : "";
+    $("#btn-notif").hidden = !("Notification" in window) || Notification.permission !== "default";
 
     const n7 = livrablesVisibles().filter(l => !etat.faits[l.id] && prochaineEcheance(l) && prochaineEcheance(l) - now < 7 * 86400000).length;
     $("#pastille-livrables").hidden = !n7;
@@ -532,7 +568,7 @@
     const m = matiere(s.matiere);
     // Prochaine séance de la même matière (date proposée par défaut pour le rendu)
     const suivante = etat.planning.seances.find(x => x.matiere === s.matiere && `${x.date}${x.debut}` > `${s.date}${s.debut}`);
-    const devoirs = livrablesVisibles().filter(l => l.matiere === s.matiere && prochaineEcheance(l))
+    const devoirs = livrablesVisibles().filter(l => l.matiere === s.matiere && (prochaineEcheance(l) || (!l.date_limite && !etat.faits[l.id])))
       .sort((a, b) => prochaineEcheance(a) - prochaineEcheance(b));
     const date = d => fmt(depuisIso(d), { weekday: "long", day: "numeric", month: "long" });
     $("#seance-contenu").innerHTML = `
@@ -594,8 +630,10 @@
       f.matiere.value = connue ? l.matiere : "__autre";
       f.matiere_libre.value = connue ? "" : l.matiere;
       f.titre.value = l.titre; f.description.value = l.description || "";
-      const d = new Date(l.date_limite);
-      f.date.value = iso(d); f.heure.value = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      if (l.date_limite) {
+        const d = new Date(l.date_limite);
+        f.date.value = iso(d); f.heure.value = l.sans_heure ? "" : `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
       f.type.value = l.type;
       if (l.mode_rendu && !MODES.includes(l.mode_rendu)) f.mode_rendu.insertAdjacentHTML("beforeend", `<option>${esc(l.mode_rendu)}</option>`);
       f.mode_rendu.value = l.mode_rendu || ""; f.lien.value = l.lien || "";
@@ -604,7 +642,7 @@
         f.soutenance_date.value = iso(s); f.soutenance_heure.value = `${pad(s.getHours())}:${pad(s.getMinutes())}`;
       }
     } else {
-      f.heure.value = "23:59"; f.soutenance_heure.value = "09:00";
+      f.heure.value = ""; f.soutenance_heure.value = "09:00";
       if (prerempli) {
         f.matiere.value = prerempli.matiere; f.type.value = prerempli.type;
         f.date.value = prerempli.date; f.heure.value = prerempli.heure;
@@ -632,11 +670,13 @@
     const mat = f.matiere.value === "__autre" ? f.matiere_libre.value.trim() : f.matiere.value;
     if (!mat) return erreur("Choisis une matière.");
     if (!f.titre.value.trim()) return erreur("Le titre est obligatoire.");
-    if (!f.date.value) return erreur("Choisis la date limite.");
+    if (!f.date.value && f.heure.value) return erreur("Choisis aussi la date (ou efface l'heure).");
     if (f.lien.value.trim() && !lienSur(f.lien.value.trim())) return erreur("Le lien doit commencer par https://");
     const champs = {
       matiere: mat, titre: f.titre.value.trim(), description: f.description.value.trim(),
-      date_limite: new Date(`${f.date.value}T${f.heure.value || "23:59"}:00`).toISOString(),
+      // Pas de date = sans échéance ; pas d'heure = dans la journée (enregistré à 23h59)
+      date_limite: f.date.value ? new Date(`${f.date.value}T${f.heure.value || "23:59"}:00`).toISOString() : null,
+      sans_heure: Boolean(f.date.value && !f.heure.value),
       groupe: GROUPE, type: f.type.value, mode_rendu: f.mode_rendu.value, lien: f.lien.value.trim(),
       membres: enEdition && enEdition.membres ? enEdition.membres : "", // ancien champ, conservé tel quel
       date_soutenance: f.soutenance_date.value ? new Date(`${f.soutenance_date.value}T${f.soutenance_heure.value || "09:00"}:00`).toISOString() : null,
@@ -645,8 +685,8 @@
     // Doublon : même matière et même date qu'un livrable existant
     const signature = `${mat}|${f.date.value}`;
     const semblables = [...livrablesOfficiels(), ...etat.livrables.filter(l => !l.supprime_le)]
-      .filter(l => l.matiere === mat && iso(new Date(l.date_limite)) === f.date.value && (!enEdition || l.id !== enEdition.id));
-    if (semblables.length && doublonAccepte !== signature) {
+      .filter(l => l.matiere === mat && l.date_limite && iso(new Date(l.date_limite)) === f.date.value && (!enEdition || l.id !== enEdition.id));
+    if (f.date.value && semblables.length && doublonAccepte !== signature) {
       doublonAccepte = signature;
       const a = $("#alerte-doublon");
       a.innerHTML = `<div>⚠ Un livrable semblable existe déjà (même matière, même date) :
@@ -731,7 +771,7 @@
     const prochaine = prochaineEcheance(l);
     $("#esp-entete").innerHTML = `<div class="l-matiere"><span class="pt" style="--c:${esc(m.couleur)}"></span>${esc(m.nom)}</div>
       <h2>${esc(l.titre)}</h2>
-      <p class="aide">${prochaine ? `À rendre ${compteRebours(prochaine)}` : "Échéance passée"}</p>`;
+      <p class="aide">${prochaine ? `À rendre ${compteRebours(prochaine, l.sans_heure)}` : l.date_limite ? "Échéance passée" : "Sans date limite"}</p>`;
 
     const groupes = etat.equipes.filter(e => e.livrable_id === l.id);
     const mien = groupes.find(e => estMembre(e));
@@ -809,11 +849,28 @@
   // =====================================================================
   //  CHARGEMENT ET ÉVÉNEMENTS
   // =====================================================================
+  /** Prévient quand un autre étudiant ajoute un devoir (message dans l'appli + notification du téléphone/ordinateur). */
+  function prevenirNouveaux(avant) {
+    const arrives = etat.livrables.filter(l => !avant.has(l.id) && !l.supprime_le && !memeNom(l.cree_par, moi()));
+    for (const l of arrives) {
+      const texte = `${l.cree_par || "Quelqu'un"} a ajouté « ${l.titre} »`;
+      toast("📌 " + texte);
+      try {
+        if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
+          new Notification("Nouveau devoir – MDC G1", { body: texte, tag: "devoir-" + l.id });
+        }
+      } catch (e) { /* certains téléphones n'affichent les notifications que pour les applis installées */ }
+    }
+  }
+
   async function recharger() {
+    const avant = new Set(etat.livrables.map(l => l.id));
     try {
       [etat.livrables, etat.historique, etat.piecesJointes, etat.equipes, etat.commentaires] = await Promise.all([
         Donnees.chargerLivrables(), Donnees.chargerHistorique(), Donnees.chargerPiecesJointes(), Donnees.chargerGroupes(),
         Donnees.chargerCommentaires()]);
+      if (!etat.premierChargement) prevenirNouveaux(avant);
+      etat.premierChargement = false;
     } catch (e) { toast("Impossible de charger les données : " + e.message); }
     remplirFiltres();
     renderTout();
@@ -878,6 +935,20 @@
       if (x0 === null || etat.mode === "liste") return;
       const dx = e.changedTouches[0].clientX - x0; x0 = null;
       if (Math.abs(dx) > 70) deplacer(dx < 0 ? 1 : -1);
+    });
+
+    // Nouveaux devoirs : « OK, vu » et activation des notifications
+    document.addEventListener("click", e => {
+      if (e.target.id !== "btn-vu") return;
+      etat.vuJusqua = new Date().toISOString(); ecrireLocal("mdc_vu", etat.vuJusqua);
+      renderResume(); renderLivrables();
+    });
+    $("#btn-notif").addEventListener("click", async () => {
+      try {
+        const r = await Notification.requestPermission();
+        toast(r === "granted" ? "🔔 Notifications activées ✔" : "Notifications refusées (modifiable dans les réglages du navigateur).");
+      } catch (e) { toast("Ce navigateur ne gère pas les notifications."); }
+      renderResume();
     });
 
     // Compléments à la consigne
@@ -978,6 +1049,7 @@
     allerOnglet(onglet === "planning" ? "planning" : "livrables");
     remplirFiltres();
     renderTout();
+    if (!etat.vuJusqua) { etat.vuJusqua = new Date().toISOString(); ecrireLocal("mdc_vu", etat.vuJusqua); }
     majEnteteMoi();
     autorisation(); // connexion obligatoire (une seule fois par appareil)
     await recharger();

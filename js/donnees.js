@@ -20,7 +20,8 @@
   // ---------- Mode démo : 3 exemples créés au premier lancement ----------
   function exemplesDemo() {
     const jour = (n, h, m) => { const d = new Date(); d.setDate(d.getDate() + n); d.setHours(h, m, 0, 0); return d.toISOString(); };
-    const base = { lien: "", membres: "", date_soutenance: null, supprime_le: null, cree_le: new Date().toISOString() };
+    const base = { lien: "", membres: "", date_soutenance: null, supprime_le: null, sans_heure: false,
+      cree_le: new Date(Date.now() - 7 * 86400000).toISOString() }; // créés « il y a une semaine » : pas affichés comme nouveaux
     return [
       { ...base, id: "demo-1", cree_par: "Ema", matiere: "data-driven-commercial", titre: "[Exemple] Tableau de bord commercial",
         description: "Construire un tableau de bord de 5 indicateurs sur votre entreprise d'accueil. 3 pages max + annexe Excel.",

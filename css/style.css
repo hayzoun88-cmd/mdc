@@ -109,6 +109,12 @@ input:focus, select:focus, textarea:focus, button:focus-visible { outline: 2px s
 .alerte-rouge { background: var(--rouge-fond); color: var(--rouge); }
 .alerte-orange { background: var(--orange-fond); color: var(--orange); }
 .alerte-vert { background: var(--vert-fond); color: var(--vert); }
+.alerte-bleu { background: var(--accent-doux); color: var(--accent); flex-wrap: wrap; }
+.alerte-bleu .btn { margin-left: auto; }
+.alerte-bleu ul { margin: .2rem 0 0; padding-left: 1.1rem; font-weight: 400; }
+.puce.nouveau { background: var(--accent); color: #fff; font-weight: 700; }
+.titre-section { font-size: .9rem; color: var(--texte-doux); margin: 1.2rem 0 0; }
+.aide-date { font-size: .8rem; margin-top: -.3rem; }
 .alerte .gros { font-size: 1.6rem; line-height: 1; }
 .alerte small { display: block; font-weight: 400; opacity: .9; }
 

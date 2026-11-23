@@ -12,6 +12,11 @@ Application web pour le **groupe 1 (G1)** de la promo **MDC 2025-2027 (ISTEF)**.
   (le même pour tout le monde). C'est mémorisé sur l'appareil. Bouton 👤 en haut pour changer de prénom.
 - **Ajout collaboratif** : tout le monde peut ajouter, modifier ou supprimer un devoir. Tout le monde voit les changements en temps réel.
   Chaque devoir affiche **« Ajouté par … »** (le prénom de la personne connectée qui l'a créé).
+- **Nouveaux devoirs** : quand quelqu'un ajoute un devoir, un message s'affiche (« Ema a ajouté … ») et un bandeau
+  « 🆕 X nouveaux devoirs depuis ta dernière visite » reste en haut jusqu'au clic sur « OK, vu ».
+  Le bouton « 🔔 Me prévenir… » active aussi les notifications du navigateur (quand le site est ouvert en arrière-plan).
+- **Date limite facultative** : sans date = devoir sans échéance (oral, à préparer…), rangé dans « Sans date limite » ;
+  sans heure = « à faire dans la journée ».
 - **Compléter la consigne** : sous chaque devoir (y compris les CC officiels), n'importe qui peut ajouter un complément
   (« le prof a dit 10 pages max »…). Chacun peut supprimer ses propres compléments.
 - **Devoirs de groupe** : bouton **👥 Groupe** sur chaque devoir. On crée son groupe (ou on rejoint celui d'un camarade),
@@ -90,7 +95,7 @@ et les livrables sont enregistrés seulement dans votre navigateur. N'importe qu
    - Plan **Free** → **Create new project**. Attendez 1 à 2 minutes.
 3. Menu de gauche → **SQL Editor** → **New query**. Ouvrez le fichier `supabase/schema.sql` du projet,
    copiez **tout** son contenu, collez-le, puis cliquez sur **Run**. Le message « Success » doit s'afficher.
-   Cela crée les tables, les règles de sécurité, le temps réel et **3 livrables d'exemple**.
+   Cela crée les tables, les règles de sécurité et le temps réel. (Facultatif : `supabase/exemples.sql` ajoute 3 devoirs d'exemple.)
 4. **Définir le code promo** : nouvelle requête SQL (**New query**), collez ceci en remplaçant `VOTRE_CODE`, puis **Run** :
    ```sql
    insert into public.config_privee (id, code_hash)

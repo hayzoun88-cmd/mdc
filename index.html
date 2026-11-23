@@ -11,7 +11,7 @@
   <script>
     try { const t = localStorage.getItem("mdc_theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
   </script>
-  <link rel="stylesheet" href="css/style.css?v=2">
+  <link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body>
   <!-- ===== En-tête ===== -->
@@ -71,6 +71,8 @@
     <!-- ===== LIVRABLES ===== -->
     <section id="vue-livrables" class="vue" hidden>
       <div id="alerte-semaine" class="alerte"></div>
+      <div id="bandeau-nouveaux" class="alerte alerte-bleu" hidden></div>
+      <button type="button" id="btn-notif" class="btn btn-petit" hidden>🔔 Me prévenir quand quelqu'un ajoute un devoir</button>
       <div class="barre-outils">
         <input id="recherche" type="search" placeholder="Rechercher un devoir…" aria-label="Rechercher">
         <button id="btn-ajouter" class="btn btn-principal">+ Ajouter</button>
@@ -114,9 +116,10 @@
         <textarea name="description" rows="3" maxlength="5000"></textarea>
       </label>
       <div class="ligne-2">
-        <label>Date limite *<input type="date" name="date" required></label>
-        <label>Heure limite<input type="time" name="heure" value="23:59"></label>
+        <label>Date limite<input type="date" name="date"></label>
+        <label>Heure<input type="time" name="heure"></label>
       </div>
+      <p class="aide aide-date">Pas de date : devoir sans échéance (oral, à préparer…). Pas d'heure : à faire dans la journée.</p>
       <label>Type<select name="type"></select></label>
       <div class="ligne-2">
         <label>Mode de rendu<select name="mode_rendu"></select></label>
@@ -216,8 +219,8 @@
 
   <!-- Bibliothèque Supabase (version figée) puis nos scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-  <script src="js/config.js?v=2"></script>
-  <script src="js/donnees.js?v=2"></script>
-  <script src="js/app.js?v=2"></script>
+  <script src="js/config.js?v=3"></script>
+  <script src="js/donnees.js?v=3"></script>
+  <script src="js/app.js?v=3"></script>
 </body>
 </html>

@@ -31,6 +31,10 @@ create table if not exists public.livrables (
   supprime_le      timestamptz           -- rempli = dans la corbeille
 );
 
+-- Date limite facultative (oral, travail sans échéance…) et option « dans la journée » (sans heure précise)
+alter table public.livrables alter column date_limite drop not null;
+alter table public.livrables add column if not exists sans_heure boolean not null default false;
+
 -- Prénom de la personne qui a ajouté le devoir (« Ajouté par Ema »)
 alter table public.livrables add column if not exists cree_par text not null default '';
 
@@ -112,11 +116,12 @@ begin
   perform public._controle(p_code, p_prenom);
   if p_id is null then
     insert into public.livrables (matiere, titre, description, date_limite, groupe, type,
-                                  mode_rendu, lien, membres, date_soutenance, cree_par)
+                                  mode_rendu, lien, membres, date_soutenance, cree_par, sans_heure)
     values (p_data->>'matiere', p_data->>'titre', coalesce(p_data->>'description', ''),
-            (p_data->>'date_limite')::timestamptz, coalesce(p_data->>'groupe', 'G1'), p_data->>'type',
+            nullif(p_data->>'date_limite', '')::timestamptz, coalesce(p_data->>'groupe', 'G1'), p_data->>'type',
             coalesce(p_data->>'mode_rendu', ''), coalesce(p_data->>'lien', ''),
-            coalesce(p_data->>'membres', ''), nullif(p_data->>'date_soutenance', '')::timestamptz, trim(p_prenom))
+            coalesce(p_data->>'membres', ''), nullif(p_data->>'date_soutenance', '')::timestamptz, trim(p_prenom),
+            coalesce((p_data->>'sans_heure')::boolean, false))
     returning id into v_id;
     insert into public.historique (livrable_id, titre, prenom, action)
     values (v_id, p_data->>'titre', trim(p_prenom), 'ajout');
@@ -124,7 +129,8 @@ begin
     update public.livrables set
       matiere = p_data->>'matiere', titre = p_data->>'titre',
       description = coalesce(p_data->>'description', ''),
-      date_limite = (p_data->>'date_limite')::timestamptz,
+      date_limite = nullif(p_data->>'date_limite', '')::timestamptz,
+      sans_heure = coalesce((p_data->>'sans_heure')::boolean, false),
       groupe = coalesce(p_data->>'groupe', 'G1'), type = p_data->>'type',
       mode_rendu = coalesce(p_data->>'mode_rendu', ''), lien = coalesce(p_data->>'lien', ''),
       membres = coalesce(p_data->>'membres', ''),
@@ -382,20 +388,6 @@ begin
   end loop;
 end $$;
 
--- ---------- 3 livrables d'EXEMPLE (pour tester) ----------
--- Pour les supprimer plus tard : voir README, section "Supprimer les exemples".
--- (ajoutés seulement s'il n'y a encore aucun exemple : on peut relancer ce fichier sans doublons)
-insert into public.livrables (matiere, titre, description, date_limite, groupe, type, mode_rendu, lien, membres, date_soutenance)
-select * from (values
- ('data-driven-commercial', '[Exemple] Tableau de bord commercial',
-  'Construire un tableau de bord de 5 indicateurs sur votre entreprise d''accueil. 3 pages max + annexe Excel.',
-  date_trunc('day', now()) + interval '1 day 23 hours 59 minutes', 'G1', 'dossier', 'Plateforme de l''école', '', '', null),
- ('business-plan', '[Exemple] Business plan – projet de groupe',
-  'Business plan complet d''un nouveau service. Dossier à rendre, puis soutenance de 15 min par groupe.',
-  date_trunc('day', now()) + interval '5 days 18 hours', 'G1', 'projet', 'Mail', '',
-  '', date_trunc('day', now()) + interval '12 days 9 hours'),
- ('leadership-et-coaching', '[Exemple] Étude de cas – style de management',
-  'Analyse d''un cas réel : identifier le style de leadership et proposer un plan de coaching.',
-  date_trunc('day', now()) + interval '16 days 12 hours', 'G1', 'etude', 'Papier', '', '', null::timestamptz)
-) as v
-where not exists (select 1 from public.livrables where titre like '[Exemple]%');
+-- ---------- Exemples ----------
+-- Les 3 devoirs d'exemple sont dans supabase/exemples.sql (facultatif).
+-- Ce fichier-ci peut donc être relancé à chaque mise à jour sans recréer d'exemples.
