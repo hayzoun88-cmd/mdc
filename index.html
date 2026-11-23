@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>MDC G1 – Devoirs & Planning</title>
+  <meta name="description" content="Planning et devoirs de la promo MDC 2025-2027 (ISTEF)">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234f46e5'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>M</text></svg>">
+  <!-- Applique le thème (clair/sombre) avant l'affichage pour éviter un flash blanc -->
+  <script>
+    try { const t = localStorage.getItem("mdc_theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- ===== En-tête ===== -->
+  <header class="entete">
+    <div class="entete-titre">
+      <span class="logo">M</span>
+      <div>
+        <strong>MDC 2e année</strong>
+        <small>Groupe 1 · Promo 2025-2027</small>
+      </div>
+    </div>
+    <div class="entete-actions">
+      <button id="btn-moi" class="btn btn-petit" title="Mon compte" hidden>👤 <span id="moi-nom"></span></button>
+      <button id="btn-theme" class="btn-icone" title="Mode clair / sombre" aria-label="Changer de thème">◐</button>
+    </div>
+  </header>
+
+  <div id="bandeau-demo" class="bandeau-demo" hidden>
+    Mode démo : la base de données n'est pas encore branchée, les devoirs restent sur cet appareil.
+  </div>
+
+  <!-- ===== Onglets (en bas sur téléphone, en haut sur ordinateur) ===== -->
+  <nav class="onglets" aria-label="Rubriques">
+    <button data-onglet="livrables" class="actif"><span>✓</span>Devoirs<b id="pastille-livrables" class="pastille" hidden></b></button>
+    <button data-onglet="planning"><span>▦</span>Planning</button>
+  </nav>
+
+  <main>
+    <!-- ===== PLANNING ===== -->
+    <section id="vue-planning" class="vue" hidden>
+      <div class="grille-2">
+        <div class="carte"><h2 id="titre-aujourdhui">Aujourd'hui</h2><div id="bloc-aujourdhui"></div></div>
+        <div class="carte"><h2 id="titre-demain">Demain</h2><div id="bloc-demain"></div></div>
+      </div>
+      <p class="aide astuce">👆 Touche un cours pour lui ajouter un devoir.</p>
+      <div class="barre-outils">
+        <div class="segment" role="tablist" aria-label="Affichage">
+          <button data-mode="semaine" class="actif">Semaine</button>
+          <button data-mode="mois">Mois</button>
+          <button data-mode="liste">Liste</button>
+        </div>
+        <div class="nav-dates">
+          <button id="nav-prec" class="btn-icone" aria-label="Précédent">‹</button>
+          <button id="nav-auj" class="btn">Aujourd'hui</button>
+          <button id="nav-suiv" class="btn-icone" aria-label="Suivant">›</button>
+        </div>
+      </div>
+      <h2 id="titre-periode" class="titre-periode"></h2>
+      <div id="planning-contenu"></div>
+      <details class="legende carte">
+        <summary>Légende des matières</summary>
+        <ul id="legende"></ul>
+      </details>
+      <p class="pied" id="pied-version"></p>
+    </section>
+
+    <!-- ===== LIVRABLES ===== -->
+    <section id="vue-livrables" class="vue" hidden>
+      <div id="alerte-semaine" class="alerte"></div>
+      <div class="barre-outils">
+        <input id="recherche" type="search" placeholder="Rechercher un devoir…" aria-label="Rechercher">
+        <button id="btn-ajouter" class="btn btn-principal">+ Ajouter</button>
+      </div>
+      <div class="filtres">
+        <select id="filtre-matiere" aria-label="Filtrer par matière"></select>
+        <select id="filtre-type" aria-label="Filtrer par type"></select>
+        <label class="case"><input type="checkbox" id="filtre-faits"> Masquer les « faits »</label>
+        <label class="case"><input type="checkbox" id="filtre-equipes"> Mes groupes</label>
+      </div>
+      <div id="liste-livrables"></div>
+      <details class="carte repli">
+        <summary>Archivés <span id="nb-archives"></span></summary>
+        <div id="liste-archives"></div>
+      </details>
+      <details class="carte repli" id="repli-corbeille">
+        <summary>Corbeille <span id="nb-corbeille"></span></summary>
+        <div id="liste-corbeille"></div>
+      </details>
+      <details class="carte repli" id="repli-historique">
+        <summary>Historique des modifications</summary>
+        <ul id="liste-historique" class="historique"></ul>
+      </details>
+    </section>
+  </main>
+
+  <!-- ===== Fenêtre : formulaire d'un livrable ===== -->
+  <dialog id="dlg-livrable" class="dialogue">
+    <form id="form-livrable" method="dialog" novalidate>
+      <h2 id="titre-form">Nouveau devoir</h2>
+      <label>Matière *
+        <select name="matiere" required></select>
+      </label>
+      <label id="champ-matiere-libre" hidden>Nom de la matière *
+        <input name="matiere_libre" maxlength="120">
+      </label>
+      <label>Titre *
+        <input name="titre" required maxlength="200" placeholder="ex. Dossier business plan">
+      </label>
+      <label>Description / consignes
+        <textarea name="description" rows="3" maxlength="5000"></textarea>
+      </label>
+      <div class="ligne-2">
+        <label>Date limite *<input type="date" name="date" required></label>
+        <label>Heure limite<input type="time" name="heure" value="23:59"></label>
+      </div>
+      <label>Type<select name="type"></select></label>
+      <div class="ligne-2">
+        <label>Mode de rendu<select name="mode_rendu"></select></label>
+        <label>Lien (optionnel)<input type="url" name="lien" placeholder="https://…" maxlength="500"></label>
+      </div>
+      <fieldset id="champs-groupe" hidden>
+        <legend>Projet de groupe / soutenance</legend>
+        <p class="aide">Les groupes se forment ensuite avec le bouton « 👥 Groupe » du devoir.</p>
+        <div class="ligne-2">
+          <label>Date de soutenance<input type="date" name="soutenance_date"></label>
+          <label>Heure<input type="time" name="soutenance_heure" value="09:00"></label>
+        </div>
+      </fieldset>
+      <div class="champ-pj">
+        <span class="libelle">Pièces jointes <small class="aide">(consignes, sujet, modèle… 5 Mo max par fichier)</small></span>
+        <ul id="pj-liste" class="pj-liste"></ul>
+        <label class="btn btn-petit bouton-fichier">📎 Joindre un fichier
+          <input type="file" id="pj-input" multiple hidden
+            accept=".pdf,.doc,.docx,.odt,.xls,.xlsx,.ods,.ppt,.pptx,.odp,.txt,.csv,.zip,image/*">
+        </label>
+      </div>
+      <div id="alerte-doublon" class="alerte alerte-orange" hidden></div>
+      <p id="erreur-form" class="erreur" hidden></p>
+      <div class="actions">
+        <button type="button" class="btn" data-fermer>Annuler</button>
+        <button type="submit" class="btn btn-principal" id="btn-enregistrer">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ===== Fenêtre : connexion (prénom + code du groupe, une seule fois par appareil) ===== -->
+  <dialog id="dlg-code" class="dialogue">
+    <form id="form-code" novalidate>
+      <h2>Connexion 👋</h2>
+      <p class="aide">Choisis ton prénom et entre le code du groupe. Tu ne le feras qu'une fois sur cet appareil.</p>
+      <label>Ton prénom *<select name="prenom" required></select></label>
+      <label id="champ-prenom-libre" hidden>Écris ton prénom *<input name="prenom_libre" maxlength="40" autocomplete="given-name"></label>
+      <label>Code du groupe *<input name="code" required type="password" autocomplete="off"></label>
+      <p id="erreur-code" class="erreur" hidden></p>
+      <div class="actions">
+        <button type="submit" class="btn btn-principal">Se connecter</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ===== Fenêtre : travail de groupe d'un livrable (qui est avec qui + fichiers du groupe) ===== -->
+  <dialog id="dlg-equipes" class="dialogue">
+    <div class="esp-haut">
+      <div id="esp-entete"></div>
+      <button type="button" class="btn-icone" data-fermer aria-label="Fermer">✕</button>
+    </div>
+
+    <!-- Si je suis dans un groupe -->
+    <section id="esp-mon-groupe" hidden>
+      <h3 class="esp-h">👥 Ton groupe</h3>
+      <div id="esp-membres" class="puces-choix"></div>
+      <p class="aide esp-aide">Ajoute tes camarades :</p>
+      <div id="esp-libres" class="puces-choix"></div>
+
+      <h3 class="esp-h">📎 Fichiers du groupe</h3>
+      <ul id="esp-fichiers" class="pj-liste"></ul>
+      <label class="btn btn-principal bouton-fichier">📎 Déposer un fichier
+        <input type="file" id="esp-fichier" multiple hidden accept=".pdf,.doc,.docx,.odt,.xls,.xlsx,.ods,.ppt,.pptx,.odp,.txt,.csv,.zip,image/*">
+      </label>
+      <p><button type="button" class="lien" id="esp-quitter">Quitter ce groupe</button></p>
+    </section>
+
+    <!-- Si je n'ai pas encore de groupe -->
+    <section id="esp-sans-groupe" hidden>
+      <p class="aide">Tu n'as pas encore de groupe pour ce devoir.</p>
+      <button type="button" id="esp-creer" class="btn btn-principal">+ Créer mon groupe</button>
+    </section>
+
+    <h3 class="esp-h" id="esp-titre-autres">Les autres groupes</h3>
+    <div id="esp-equipes" class="esp-equipes"></div>
+  </dialog>
+
+  <!-- ===== Fenêtre : fiche d'un cours (clic dans le planning) ===== -->
+  <dialog id="dlg-seance" class="dialogue">
+    <div id="seance-contenu"></div>
+    <div class="actions">
+      <button type="button" class="btn" data-fermer>Fermer</button>
+      <button type="button" class="btn btn-principal" id="btn-affecter">+ Ajouter un devoir</button>
+    </div>
+  </dialog>
+
+  <!-- ===== Fenêtre : confirmation ===== -->
+  <dialog id="dlg-confirm" class="dialogue">
+    <p id="confirm-texte"></p>
+    <div class="actions">
+      <button type="button" class="btn" id="confirm-non">Annuler</button>
+      <button type="button" class="btn btn-danger" id="confirm-oui">Confirmer</button>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <!-- Bibliothèque Supabase (version figée) puis nos scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/donnees.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

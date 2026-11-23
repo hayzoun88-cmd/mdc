@@ -1,0 +1,1924 @@
+{
+ "meta": {
+  "formation": "Manager du Développement Commercial (MDC) – 2e année",
+  "promo": "2025-2027",
+  "groupe": "G1",
+  "version": "V1.2 23-09-26 TP",
+  "source": "PLANNING MDC 25-27 G1 2EME ANNEE V1.2 23-09-26-TP.pdf",
+  "importe_le": "2026-11-23T13:11",
+  "debut": "2026-08-31",
+  "fin": "2027-09-03",
+  "alternance": true
+ },
+ "groupes": [
+  "G1"
+ ],
+ "matieres": [
+  {
+   "id": "analyse-des-marches-et-des-tendances",
+   "nom": "Analyse des marchés et des tendances",
+   "intervenant": "SOLIVERES Eric",
+   "couleur": "#9a6324"
+  },
+  {
+   "id": "analyse-et-roi",
+   "nom": "Analyse et ROI",
+   "intervenant": "KOLODZIEJCZAK Clément",
+   "couleur": "#911eb4"
+  },
+  {
+   "id": "business-plan",
+   "nom": "Business plan",
+   "intervenant": "BONGRAND Magali",
+   "couleur": "#3cb44b"
+  },
+  {
+   "id": "data-driven-commercial",
+   "nom": "Data driven commercial",
+   "intervenant": "VIALA Eric",
+   "couleur": "#42d4f4"
+  },
+  {
+   "id": "dossier-de-synthese",
+   "nom": "Dossier de synthèse",
+   "intervenant": "DAUZATS Ingrid / BARRIEU Cyrille",
+   "couleur": "#f58231"
+  },
+  {
+   "id": "entretien-professionnels-et-entretiens-annuels-d-appreciation",
+   "nom": "Entretien professionnels et entretiens annuels d'appréciation",
+   "intervenant": "HEMART Christelle",
+   "couleur": "#e6a800"
+  },
+  {
+   "id": "innovation-and-creativity",
+   "nom": "Innovation and creativity",
+   "intervenant": "MONTURET Serge",
+   "couleur": "#808000"
+  },
+  {
+   "id": "la-place-du-manager-dans-la-structure",
+   "nom": "La place du manager dans la structure",
+   "intervenant": "TAKILT Cyrielle",
+   "couleur": "#2b8a3e"
+  },
+  {
+   "id": "leadership-et-coaching",
+   "nom": "Leadership et coaching",
+   "intervenant": "JOURNE Franck",
+   "couleur": "#e6194b"
+  },
+  {
+   "id": "negociation-commerciale",
+   "nom": "Négociation commerciale",
+   "intervenant": "GUYADER Gaël",
+   "couleur": "#000075"
+  },
+  {
+   "id": "optimisation-d-une-plateforme-e-commerciale",
+   "nom": "Optimisation d'une plateforme e-commerciale",
+   "intervenant": "KOLODZIEJCZAK Clément",
+   "couleur": "#5f3dc4"
+  },
+  {
+   "id": "optimisation-de-la-performance-individuelle-et-collective",
+   "nom": "Optimisation de la performance individuelle et collective",
+   "intervenant": "DURAND Yasmina",
+   "couleur": "#f032e6"
+  },
+  {
+   "id": "outils-de-gestion-de-la-relation-client",
+   "nom": "Outils de gestion de la relation client",
+   "intervenant": "COLLET Lydie",
+   "couleur": "#2f8f2f"
+  },
+  {
+   "id": "pitch",
+   "nom": "PITCH",
+   "intervenant": "DAUZATS Ingrid / VIALA Eric",
+   "couleur": "#d9480f"
+  },
+  {
+   "id": "performance-commerciale-de-la-strategie",
+   "nom": "Performance commerciale de la stratégie",
+   "intervenant": "THOMAS Sylvain",
+   "couleur": "#dc5f86"
+  },
+  {
+   "id": "plan-d-actions-commerciales-et-omnicanales",
+   "nom": "Plan d'actions commerciales et omnicanales",
+   "intervenant": "COLLET Lydie",
+   "couleur": "#7048e8"
+  },
+  {
+   "id": "positionnement-commercial",
+   "nom": "Positionnement commercial",
+   "intervenant": "VIALA Eric",
+   "couleur": "#b5651d"
+  },
+  {
+   "id": "projet-professionnel-personnel",
+   "nom": "Projet professionnel personnel",
+   "intervenant": "VIALA Eric",
+   "couleur": "#74b816"
+  },
+  {
+   "id": "prospection-et-fidelisation",
+   "nom": "Prospection et fidélisation",
+   "intervenant": "GUYADER Gaël",
+   "couleur": "#4363d8"
+  },
+  {
+   "id": "prospection-et-parcours-clients",
+   "nom": "Prospection et parcours clients",
+   "intervenant": "MAURIN Karl",
+   "couleur": "#5c7cfa"
+  },
+  {
+   "id": "recrutement-et-fidelisation-des-collaborateurs",
+   "nom": "Recrutement et fidélisation des collaborateurs",
+   "intervenant": "HEMART Christelle",
+   "couleur": "#469990"
+  },
+  {
+   "id": "strategie-commerciale-et-partenariats",
+   "nom": "Stratégie commerciale et partenariats",
+   "intervenant": "CIECIURA Lionel",
+   "couleur": "#c2255c"
+  },
+  {
+   "id": "suivi-de-plan-d-actions",
+   "nom": "Suivi de plan d'actions",
+   "intervenant": "DURAND Nathalie",
+   "couleur": "#0b8a8a"
+  }
+ ],
+ "seances": [
+  {
+   "id": "2026-08-31-am",
+   "date": "2026-08-31",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": null,
+   "titre": "Rentrée",
+   "seance": null,
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-08-31-pm",
+   "date": "2026-08-31",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "leadership-et-coaching",
+   "titre": "Leadership et coaching",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-09-07-am",
+   "date": "2026-09-07",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "business-plan",
+   "titre": "Business plan",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-09-07-pm",
+   "date": "2026-09-07",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "prospection-et-fidelisation",
+   "titre": "Prospection et fidélisation",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-09-14-am",
+   "date": "2026-09-14",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "dossier-de-synthese",
+   "titre": "Dossier de synthèse",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-09-14-pm",
+   "date": "2026-09-14",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "prospection-et-fidelisation",
+   "titre": "Prospection et fidélisation",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-09-21-am",
+   "date": "2026-09-21",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "analyse-et-roi",
+   "titre": "Analyse et ROI",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-09-21-pm",
+   "date": "2026-09-21",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": null,
+   "titre": "Autonomie",
+   "seance": null,
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-09-28-am",
+   "date": "2026-09-28",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "data-driven-commercial",
+   "titre": "Data driven commercial",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-09-28-pm",
+   "date": "2026-09-28",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "optimisation-de-la-performance-individuelle-et-collective",
+   "titre": "Optimisation de la performance individuelle et collective",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-05-am",
+   "date": "2026-10-05",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "data-driven-commercial",
+   "titre": "Data driven commercial",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-05-pm",
+   "date": "2026-10-05",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "prospection-et-fidelisation",
+   "titre": "Prospection et fidélisation",
+   "seance": "S3",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-12-am",
+   "date": "2026-10-12",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "analyse-des-marches-et-des-tendances",
+   "titre": "Analyse des marchés et des tendances",
+   "seance": "S1",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-12-pm",
+   "date": "2026-10-12",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "recrutement-et-fidelisation-des-collaborateurs",
+   "titre": "Recrutement et fidélisation des collaborateurs",
+   "seance": "S1",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-13-am",
+   "date": "2026-10-13",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "optimisation-de-la-performance-individuelle-et-collective",
+   "titre": "Optimisation de la performance individuelle et collective",
+   "seance": "S2",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-13-pm",
+   "date": "2026-10-13",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "leadership-et-coaching",
+   "titre": "Leadership et coaching",
+   "seance": "S2",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-14-am",
+   "date": "2026-10-14",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "leadership-et-coaching",
+   "titre": "Leadership et coaching",
+   "seance": "S3",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-14-pm",
+   "date": "2026-10-14",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "recrutement-et-fidelisation-des-collaborateurs",
+   "titre": "Recrutement et fidélisation des collaborateurs",
+   "seance": "S2",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-15-am",
+   "date": "2026-10-15",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "recrutement-et-fidelisation-des-collaborateurs",
+   "titre": "Recrutement et fidélisation des collaborateurs",
+   "seance": "S3",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-15-pm",
+   "date": "2026-10-15",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "recrutement-et-fidelisation-des-collaborateurs",
+   "titre": "Recrutement et fidélisation des collaborateurs",
+   "seance": "S4",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-16-am",
+   "date": "2026-10-16",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "prospection-et-fidelisation",
+   "titre": "Prospection et fidélisation",
+   "seance": "S4",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-16-pm",
+   "date": "2026-10-16",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "leadership-et-coaching",
+   "titre": "Leadership et coaching",
+   "seance": "S4",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-19-am",
+   "date": "2026-10-19",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "analyse-des-marches-et-des-tendances",
+   "titre": "Analyse des marchés et des tendances",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-19-pm",
+   "date": "2026-10-19",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "analyse-et-roi",
+   "titre": "Analyse et ROI",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-26-am",
+   "date": "2026-10-26",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "innovation-and-creativity",
+   "titre": "Innovation and creativity",
+   "seance": "S1",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-10-26-pm",
+   "date": "2026-10-26",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "negociation-commerciale",
+   "titre": "Négociation commerciale",
+   "seance": "S1",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-11-02-am",
+   "date": "2026-11-02",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "data-driven-commercial",
+   "titre": "Data driven commercial",
+   "seance": "S3",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-11-02-pm",
+   "date": "2026-11-02",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "business-plan",
+   "titre": "Business plan",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-11-09-am",
+   "date": "2026-11-09",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "analyse-des-marches-et-des-tendances",
+   "titre": "Analyse des marchés et des tendances",
+   "seance": "S3",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-11-09-pm",
+   "date": "2026-11-09",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "dossier-de-synthese",
+   "titre": "Dossier de synthèse",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-11-16-am",
+   "date": "2026-11-16",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "innovation-and-creativity",
+   "titre": "Innovation and creativity",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-11-16-pm",
+   "date": "2026-11-16",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "optimisation-de-la-performance-individuelle-et-collective",
+   "titre": "Optimisation de la performance individuelle et collective",
+   "seance": "S3",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-11-23-am",
+   "date": "2026-11-23",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "data-driven-commercial",
+   "titre": "Data driven commercial",
+   "seance": "S4",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-11-23-pm",
+   "date": "2026-11-23",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "business-plan",
+   "titre": "Business plan",
+   "seance": "S3",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-11-30-am",
+   "date": "2026-11-30",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "optimisation-de-la-performance-individuelle-et-collective",
+   "titre": "Optimisation de la performance individuelle et collective",
+   "seance": "S4",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-11-30-pm",
+   "date": "2026-11-30",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "dossier-de-synthese",
+   "titre": "Dossier de synthèse",
+   "seance": "S3",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-01-am",
+   "date": "2026-12-01",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "analyse-et-roi",
+   "titre": "Analyse et ROI",
+   "seance": "S3",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-01-pm",
+   "date": "2026-12-01",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "leadership-et-coaching",
+   "titre": "Leadership et coaching",
+   "seance": "S5",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-02-am",
+   "date": "2026-12-02",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "entretien-professionnels-et-entretiens-annuels-d-appreciation",
+   "titre": "Entretien professionnels et entretiens annuels d'appréciation",
+   "seance": "S1",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-02-pm",
+   "date": "2026-12-02",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": null,
+   "titre": "Rattrapage Examens 1ère année",
+   "seance": null,
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-03-am",
+   "date": "2026-12-03",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "analyse-et-roi",
+   "titre": "Analyse et ROI",
+   "seance": "S4",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-03-pm",
+   "date": "2026-12-03",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "innovation-and-creativity",
+   "titre": "Innovation and creativity",
+   "seance": "S3",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-04-am",
+   "date": "2026-12-04",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "analyse-des-marches-et-des-tendances",
+   "titre": "Analyse des marchés et des tendances",
+   "seance": "S4",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-04-pm",
+   "date": "2026-12-04",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "negociation-commerciale",
+   "titre": "Négociation commerciale",
+   "seance": "S2",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-07-am",
+   "date": "2026-12-07",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "innovation-and-creativity",
+   "titre": "Innovation and creativity",
+   "seance": "S4",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-07-pm",
+   "date": "2026-12-07",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "optimisation-de-la-performance-individuelle-et-collective",
+   "titre": "Optimisation de la performance individuelle et collective",
+   "seance": "S5",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-14-am",
+   "date": "2026-12-14",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "analyse-des-marches-et-des-tendances",
+   "titre": "Analyse des marchés et des tendances",
+   "seance": "S5",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-14-pm",
+   "date": "2026-12-14",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": null,
+   "titre": "Rattrapage Examens 1ère année",
+   "seance": null,
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-21-am",
+   "date": "2026-12-21",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "entretien-professionnels-et-entretiens-annuels-d-appreciation",
+   "titre": "Entretien professionnels et entretiens annuels d'appréciation",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2026-12-21-pm",
+   "date": "2026-12-21",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "performance-commerciale-de-la-strategie",
+   "titre": "Performance commerciale de la stratégie",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-01-04-am",
+   "date": "2027-01-04",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "outils-de-gestion-de-la-relation-client",
+   "titre": "Outils de gestion de la relation client",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-01-04-pm",
+   "date": "2027-01-04",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "entretien-professionnels-et-entretiens-annuels-d-appreciation",
+   "titre": "Entretien professionnels et entretiens annuels d'appréciation",
+   "seance": "S3",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-01-11-am",
+   "date": "2027-01-11",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "analyse-et-roi",
+   "titre": "Analyse et ROI",
+   "seance": "S5",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-01-11-pm",
+   "date": "2027-01-11",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "performance-commerciale-de-la-strategie",
+   "titre": "Performance commerciale de la stratégie",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-01-18-am",
+   "date": "2027-01-18",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "outils-de-gestion-de-la-relation-client",
+   "titre": "Outils de gestion de la relation client",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-01-18-pm",
+   "date": "2027-01-18",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "negociation-commerciale",
+   "titre": "Négociation commerciale",
+   "seance": "S3",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-01-25-am",
+   "date": "2027-01-25",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "prospection-et-parcours-clients",
+   "titre": "Prospection et parcours clients",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-01-25-pm",
+   "date": "2027-01-25",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "dossier-de-synthese",
+   "titre": "Dossier de synthèse",
+   "seance": "S4",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-02-01-am",
+   "date": "2027-02-01",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "positionnement-commercial",
+   "titre": "Positionnement commercial",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-02-01-pm",
+   "date": "2027-02-01",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "plan-d-actions-commerciales-et-omnicanales",
+   "titre": "Plan d'actions commerciales et omnicanales",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-02-08-am",
+   "date": "2027-02-08",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "performance-commerciale-de-la-strategie",
+   "titre": "Performance commerciale de la stratégie",
+   "seance": "S3",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-02-08-pm",
+   "date": "2027-02-08",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "outils-de-gestion-de-la-relation-client",
+   "titre": "Outils de gestion de la relation client",
+   "seance": "S3",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-02-15-am",
+   "date": "2027-02-15",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "suivi-de-plan-d-actions",
+   "titre": "Suivi de plan d'actions",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-02-15-pm",
+   "date": "2027-02-15",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "negociation-commerciale",
+   "titre": "Négociation commerciale",
+   "seance": "S4",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-02-22-am",
+   "date": "2027-02-22",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "outils-de-gestion-de-la-relation-client",
+   "titre": "Outils de gestion de la relation client",
+   "seance": "S4",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-02-22-pm",
+   "date": "2027-02-22",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "prospection-et-parcours-clients",
+   "titre": "Prospection et parcours clients",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-01-am",
+   "date": "2027-03-01",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "plan-d-actions-commerciales-et-omnicanales",
+   "titre": "Plan d'actions commerciales et omnicanales",
+   "seance": "S2",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-01-pm",
+   "date": "2027-03-01",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "prospection-et-parcours-clients",
+   "titre": "Prospection et parcours clients",
+   "seance": "S3",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-02-am",
+   "date": "2027-03-02",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "plan-d-actions-commerciales-et-omnicanales",
+   "titre": "Plan d'actions commerciales et omnicanales",
+   "seance": "S3",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-02-pm",
+   "date": "2027-03-02",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "strategie-commerciale-et-partenariats",
+   "titre": "Stratégie commerciale et partenariats",
+   "seance": "S1",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-03-am",
+   "date": "2027-03-03",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "positionnement-commercial",
+   "titre": "Positionnement commercial",
+   "seance": "S2",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-03-pm",
+   "date": "2027-03-03",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "optimisation-d-une-plateforme-e-commerciale",
+   "titre": "Optimisation d'une plateforme e-commerciale",
+   "seance": "S1",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-04-am",
+   "date": "2027-03-04",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "suivi-de-plan-d-actions",
+   "titre": "Suivi de plan d'actions",
+   "seance": "S2",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-04-pm",
+   "date": "2027-03-04",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "negociation-commerciale",
+   "titre": "Négociation commerciale",
+   "seance": "S5",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-05-am",
+   "date": "2027-03-05",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "business-plan",
+   "titre": "Business plan",
+   "seance": "S4",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-05-pm",
+   "date": "2027-03-05",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "negociation-commerciale",
+   "titre": "Négociation commerciale",
+   "seance": "S6",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-08-am",
+   "date": "2027-03-08",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "performance-commerciale-de-la-strategie",
+   "titre": "Performance commerciale de la stratégie",
+   "seance": "S4",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-08-pm",
+   "date": "2027-03-08",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "dossier-de-synthese",
+   "titre": "Dossier de synthèse",
+   "seance": "S5",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-15-am",
+   "date": "2027-03-15",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "strategie-commerciale-et-partenariats",
+   "titre": "Stratégie commerciale et partenariats",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-15-pm",
+   "date": "2027-03-15",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "performance-commerciale-de-la-strategie",
+   "titre": "Performance commerciale de la stratégie",
+   "seance": "S5",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-22-am",
+   "date": "2027-03-22",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "positionnement-commercial",
+   "titre": "Positionnement commercial",
+   "seance": "S3",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-03-22-pm",
+   "date": "2027-03-22",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "plan-d-actions-commerciales-et-omnicanales",
+   "titre": "Plan d'actions commerciales et omnicanales",
+   "seance": "S4",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-04-05-am",
+   "date": "2027-04-05",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "prospection-et-parcours-clients",
+   "titre": "Prospection et parcours clients",
+   "seance": "S4",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-04-05-pm",
+   "date": "2027-04-05",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "optimisation-d-une-plateforme-e-commerciale",
+   "titre": "Optimisation d'une plateforme e-commerciale",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-04-12-am",
+   "date": "2027-04-12",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "optimisation-d-une-plateforme-e-commerciale",
+   "titre": "Optimisation d'une plateforme e-commerciale",
+   "seance": "S3",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-04-12-pm",
+   "date": "2027-04-12",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "suivi-de-plan-d-actions",
+   "titre": "Suivi de plan d'actions",
+   "seance": "S3",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-04-19-am",
+   "date": "2027-04-19",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "entretien-professionnels-et-entretiens-annuels-d-appreciation",
+   "titre": "Entretien professionnels et entretiens annuels d'appréciation",
+   "seance": "S4",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-04-19-pm",
+   "date": "2027-04-19",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "prospection-et-parcours-clients",
+   "titre": "Prospection et parcours clients",
+   "seance": "S5",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-04-26-am",
+   "date": "2027-04-26",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "positionnement-commercial",
+   "titre": "Positionnement commercial",
+   "seance": "S4",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-04-26-pm",
+   "date": "2027-04-26",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "business-plan",
+   "titre": "Business plan",
+   "seance": "S5",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-05-03-am",
+   "date": "2027-05-03",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "suivi-de-plan-d-actions",
+   "titre": "Suivi de plan d'actions",
+   "seance": "S4",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-05-03-pm",
+   "date": "2027-05-03",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "optimisation-d-une-plateforme-e-commerciale",
+   "titre": "Optimisation d'une plateforme e-commerciale",
+   "seance": "S4",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-05-10-am",
+   "date": "2027-05-10",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "plan-d-actions-commerciales-et-omnicanales",
+   "titre": "Plan d'actions commerciales et omnicanales",
+   "seance": "S5",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-05-10-pm",
+   "date": "2027-05-10",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "projet-professionnel-personnel",
+   "titre": "Projet professionnel personnel",
+   "seance": "S1",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-05-24-am",
+   "date": "2027-05-24",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "plan-d-actions-commerciales-et-omnicanales",
+   "titre": "Plan d'actions commerciales et omnicanales",
+   "seance": "S6",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-05-24-pm",
+   "date": "2027-05-24",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "dossier-de-synthese",
+   "titre": "Dossier de synthèse",
+   "seance": "S6",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-05-31-am",
+   "date": "2027-05-31",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": null,
+   "titre": "Business game",
+   "seance": null,
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-05-31-pm",
+   "date": "2027-05-31",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": null,
+   "titre": "Business game",
+   "seance": null,
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-01-am",
+   "date": "2027-06-01",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": null,
+   "titre": "Business game",
+   "seance": null,
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-01-pm",
+   "date": "2027-06-01",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": null,
+   "titre": "Business game",
+   "seance": null,
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-07-am",
+   "date": "2027-06-07",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "strategie-commerciale-et-partenariats",
+   "titre": "Stratégie commerciale et partenariats",
+   "seance": "S3",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-07-pm",
+   "date": "2027-06-07",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "positionnement-commercial",
+   "titre": "Positionnement commercial",
+   "seance": "S5",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-14-am",
+   "date": "2027-06-14",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "pitch",
+   "titre": "PITCH",
+   "seance": null,
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-14-pm",
+   "date": "2027-06-14",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "pitch",
+   "titre": "PITCH",
+   "seance": null,
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-15-am",
+   "date": "2027-06-15",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "pitch",
+   "titre": "PITCH",
+   "seance": null,
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-15-pm",
+   "date": "2027-06-15",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "pitch",
+   "titre": "PITCH",
+   "seance": null,
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-16-am",
+   "date": "2027-06-16",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "pitch",
+   "titre": "PITCH",
+   "seance": null,
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-16-pm",
+   "date": "2027-06-16",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "pitch",
+   "titre": "PITCH",
+   "seance": null,
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-17-am",
+   "date": "2027-06-17",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "pitch",
+   "titre": "PITCH",
+   "seance": null,
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-17-pm",
+   "date": "2027-06-17",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "pitch",
+   "titre": "PITCH",
+   "seance": null,
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-18-am",
+   "date": "2027-06-18",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": null,
+   "titre": "Oral pitch",
+   "seance": null,
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-18-pm",
+   "date": "2027-06-18",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": null,
+   "titre": "Oral pitch",
+   "seance": null,
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-21-am",
+   "date": "2027-06-21",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "projet-professionnel-personnel",
+   "titre": "Projet professionnel personnel",
+   "seance": "S2",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-21-pm",
+   "date": "2027-06-21",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "optimisation-d-une-plateforme-e-commerciale",
+   "titre": "Optimisation d'une plateforme e-commerciale",
+   "seance": "S5",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-28-am",
+   "date": "2027-06-28",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "optimisation-d-une-plateforme-e-commerciale",
+   "titre": "Optimisation d'une plateforme e-commerciale",
+   "seance": "S6",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-06-28-pm",
+   "date": "2027-06-28",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "la-place-du-manager-dans-la-structure",
+   "titre": "La place du manager dans la structure",
+   "seance": "S1",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-07-05-am",
+   "date": "2027-07-05",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "strategie-commerciale-et-partenariats",
+   "titre": "Stratégie commerciale et partenariats",
+   "seance": "S4",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-07-05-pm",
+   "date": "2027-07-05",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "la-place-du-manager-dans-la-structure",
+   "titre": "La place du manager dans la structure",
+   "seance": "S2",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-07-06-am",
+   "date": "2027-07-06",
+   "debut": "09:00",
+   "fin": "12:30",
+   "matiere": "la-place-du-manager-dans-la-structure",
+   "titre": "La place du manager dans la structure",
+   "seance": "S3",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-07-06-pm",
+   "date": "2027-07-06",
+   "debut": "13:30",
+   "fin": "17:00",
+   "matiere": "la-place-du-manager-dans-la-structure",
+   "titre": "La place du manager dans la structure",
+   "seance": "S4",
+   "heures": 3.5,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-07-12-am",
+   "date": "2027-07-12",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": "strategie-commerciale-et-partenariats",
+   "titre": "Stratégie commerciale et partenariats",
+   "seance": "S5",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-07-12-pm",
+   "date": "2027-07-12",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": "dossier-de-synthese",
+   "titre": "Dossier de synthèse",
+   "seance": "S7",
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-07-19-am",
+   "date": "2027-07-19",
+   "debut": "08:30",
+   "fin": "12:30",
+   "matiere": null,
+   "titre": "Entraînement examens",
+   "seance": null,
+   "heures": 4.0,
+   "groupe": "G1"
+  },
+  {
+   "id": "2027-07-19-pm",
+   "date": "2027-07-19",
+   "debut": "13:30",
+   "fin": "17:30",
+   "matiere": null,
+   "titre": "Entraînement examens",
+   "seance": null,
+   "heures": 4.0,
+   "groupe": "G1"
+  }
+ ],
+ "evaluations": [
+  {
+   "id": "cc-2026-10-15-recrutement",
+   "date": "2026-10-15",
+   "debut": "09:00",
+   "fin": "17:00",
+   "titre": "Contrôle continu – Recrutement et fidélisation des collaborateurs",
+   "type": "examen",
+   "matiere": "recrutement-et-fidelisation-des-collaborateurs",
+   "groupe": "G1",
+   "mention_pdf": "Recrutement - CC",
+   "seances": [
+    "2026-10-15-am",
+    "2026-10-15-pm"
+   ]
+  },
+  {
+   "id": "cc-2026-10-16-prospection-fidelis",
+   "date": "2026-10-16",
+   "debut": "09:00",
+   "fin": "12:30",
+   "titre": "Contrôle continu – Prospection et fidélisation",
+   "type": "examen",
+   "matiere": "prospection-et-fidelisation",
+   "groupe": "G1",
+   "mention_pdf": "Prospection & fidélis - CC",
+   "seances": [
+    "2026-10-16-am"
+   ]
+  },
+  {
+   "id": "cc-2026-11-09-analyse-marches",
+   "date": "2026-11-09",
+   "debut": "08:30",
+   "fin": "12:30",
+   "titre": "Contrôle continu – Analyse des marchés et des tendances",
+   "type": "examen",
+   "matiere": "analyse-des-marches-et-des-tendances",
+   "groupe": "G1",
+   "mention_pdf": "Analyse marchés - CC",
+   "seances": [
+    "2026-11-09-am"
+   ]
+  },
+  {
+   "id": "cc-2026-11-23-data-driven",
+   "date": "2026-11-23",
+   "debut": "08:30",
+   "fin": "12:30",
+   "titre": "Contrôle continu – Data driven commercial",
+   "type": "examen",
+   "matiere": "data-driven-commercial",
+   "groupe": "G1",
+   "mention_pdf": "Data driven - CC",
+   "seances": [
+    "2026-11-23-am"
+   ]
+  },
+  {
+   "id": "cc-2026-12-01-leadership",
+   "date": "2026-12-01",
+   "debut": "13:30",
+   "fin": "17:00",
+   "titre": "Contrôle continu – Leadership et coaching",
+   "type": "examen",
+   "matiere": "leadership-et-coaching",
+   "groupe": "G1",
+   "mention_pdf": "Leadership - CC",
+   "seances": [
+    "2026-12-01-pm"
+   ]
+  },
+  {
+   "id": "cc-2026-12-07-innovation",
+   "date": "2026-12-07",
+   "debut": "08:30",
+   "fin": "12:30",
+   "titre": "Contrôle continu – Innovation and creativity",
+   "type": "examen",
+   "matiere": "innovation-and-creativity",
+   "groupe": "G1",
+   "mention_pdf": "Innovation - CC",
+   "seances": [
+    "2026-12-07-am"
+   ]
+  },
+  {
+   "id": "cc-2026-12-07-optimisation",
+   "date": "2026-12-07",
+   "debut": "13:30",
+   "fin": "17:30",
+   "titre": "Contrôle continu – Optimisation de la performance individuelle et collective",
+   "type": "examen",
+   "matiere": "optimisation-de-la-performance-individuelle-et-collective",
+   "groupe": "G1",
+   "mention_pdf": "Optimisation - CC",
+   "seances": [
+    "2026-12-07-pm"
+   ]
+  },
+  {
+   "id": "cc-2026-12-14-analyse-marches",
+   "date": "2026-12-14",
+   "debut": "08:30",
+   "fin": "12:30",
+   "titre": "Contrôle continu – Analyse des marchés et des tendances",
+   "type": "examen",
+   "matiere": "analyse-des-marches-et-des-tendances",
+   "groupe": "G1",
+   "mention_pdf": "Analyse marchés - CC",
+   "seances": [
+    "2026-12-14-am"
+   ]
+  },
+  {
+   "id": "cc-2027-01-11-analyse-et-roi",
+   "date": "2027-01-11",
+   "debut": "08:30",
+   "fin": "12:30",
+   "titre": "Contrôle continu – Analyse et ROI",
+   "type": "examen",
+   "matiere": "analyse-et-roi",
+   "groupe": "G1",
+   "mention_pdf": "Analyse et ROI - CC",
+   "seances": [
+    "2027-01-11-am"
+   ]
+  },
+  {
+   "id": "cc-2027-02-08-outils-de-gestion",
+   "date": "2027-02-08",
+   "debut": "13:30",
+   "fin": "17:30",
+   "titre": "Contrôle continu – Outils de gestion de la relation client",
+   "type": "examen",
+   "matiere": "outils-de-gestion-de-la-relation-client",
+   "groupe": "G1",
+   "mention_pdf": "Outils de gestion - CC",
+   "seances": [
+    "2027-02-08-pm"
+   ]
+  },
+  {
+   "id": "cc-2027-02-22-outils-de-gestion",
+   "date": "2027-02-22",
+   "debut": "08:30",
+   "fin": "12:30",
+   "titre": "Contrôle continu – Outils de gestion de la relation client",
+   "type": "examen",
+   "matiere": "outils-de-gestion-de-la-relation-client",
+   "groupe": "G1",
+   "mention_pdf": "Outils de gestion - CC",
+   "seances": [
+    "2027-02-22-am"
+   ]
+  },
+  {
+   "id": "cc-2027-03-05-nego-comm",
+   "date": "2027-03-05",
+   "debut": "13:30",
+   "fin": "17:00",
+   "titre": "Contrôle continu – Négociation commerciale",
+   "type": "examen",
+   "matiere": "negociation-commerciale",
+   "groupe": "G1",
+   "mention_pdf": "Négo comm - CC",
+   "seances": [
+    "2027-03-05-pm"
+   ]
+  },
+  {
+   "id": "cc-2027-03-15-perf-co",
+   "date": "2027-03-15",
+   "debut": "13:30",
+   "fin": "17:30",
+   "titre": "Contrôle continu – Performance commerciale de la stratégie",
+   "type": "examen",
+   "matiere": "performance-commerciale-de-la-strategie",
+   "groupe": "G1",
+   "mention_pdf": "Perf co - CC",
+   "seances": [
+    "2027-03-15-pm"
+   ]
+  },
+  {
+   "id": "cc-2027-04-12-suivi-plan-d-actions",
+   "date": "2027-04-12",
+   "debut": "13:30",
+   "fin": "17:30",
+   "titre": "Contrôle continu – Suivi de plan d'actions",
+   "type": "examen",
+   "matiere": "suivi-de-plan-d-actions",
+   "groupe": "G1",
+   "mention_pdf": "Suivi plan d'actions - CC",
+   "seances": [
+    "2027-04-12-pm"
+   ]
+  },
+  {
+   "id": "cc-2027-04-19-entretien",
+   "date": "2027-04-19",
+   "debut": "08:30",
+   "fin": "12:30",
+   "titre": "Contrôle continu – Entretien professionnels et entretiens annuels d'appréciation",
+   "type": "examen",
+   "matiere": "entretien-professionnels-et-entretiens-annuels-d-appreciation",
+   "groupe": "G1",
+   "mention_pdf": "Entretien - CC",
+   "seances": [
+    "2027-04-19-am"
+   ]
+  },
+  {
+   "id": "cc-2027-04-19-prospection",
+   "date": "2027-04-19",
+   "debut": "13:30",
+   "fin": "17:30",
+   "titre": "Contrôle continu – Prospection et parcours clients",
+   "type": "examen",
+   "matiere": "prospection-et-parcours-clients",
+   "groupe": "G1",
+   "mention_pdf": "Prospection - CC",
+   "seances": [
+    "2027-04-19-pm"
+   ]
+  },
+  {
+   "id": "cc-2027-04-26-business-plan",
+   "date": "2027-04-26",
+   "debut": "13:30",
+   "fin": "17:30",
+   "titre": "Contrôle continu – Business plan",
+   "type": "examen",
+   "matiere": "business-plan",
+   "groupe": "G1",
+   "mention_pdf": "Business plan - CC",
+   "seances": [
+    "2027-04-26-pm"
+   ]
+  },
+  {
+   "id": "cc-2027-05-24-plan-d-actions-co",
+   "date": "2027-05-24",
+   "debut": "08:30",
+   "fin": "12:30",
+   "titre": "Contrôle continu – Plan d'actions commerciales et omnicanales",
+   "type": "examen",
+   "matiere": "plan-d-actions-commerciales-et-omnicanales",
+   "groupe": "G1",
+   "mention_pdf": "Plan d'actions co - CC",
+   "seances": [
+    "2027-05-24-am"
+   ]
+  },
+  {
+   "id": "ev-2027-05-24-entrainement-ecrit-b1-b2",
+   "date": "2027-05-24",
+   "debut": "08:30",
+   "fin": null,
+   "titre": "Entraînement écrit B1 + B2",
+   "type": "examen",
+   "matiere": null,
+   "groupe": "G1",
+   "mention_pdf": "Entraînement écrit B1 + B2",
+   "seances": []
+  },
+  {
+   "id": "ev-2027-06-07-rendu-dossier-bloc-4",
+   "date": "2027-06-07",
+   "debut": "08:30",
+   "fin": null,
+   "titre": "Rendu dossier Bloc 4",
+   "type": "dossier",
+   "matiere": null,
+   "groupe": "G1",
+   "mention_pdf": "RENDU DOSSIER BLOC 4",
+   "seances": []
+  },
+  {
+   "id": "cc-2027-06-07-positionnement-co",
+   "date": "2027-06-07",
+   "debut": "13:30",
+   "fin": "17:30",
+   "titre": "Contrôle continu – Positionnement commercial",
+   "type": "examen",
+   "matiere": "positionnement-commercial",
+   "groupe": "G1",
+   "mention_pdf": "Positionnement co - CC",
+   "seances": [
+    "2027-06-07-pm"
+   ]
+  },
+  {
+   "id": "cc-2027-06-28-optimisat-plateforme",
+   "date": "2027-06-28",
+   "debut": "09:00",
+   "fin": "12:30",
+   "titre": "Contrôle continu – Optimisation d'une plateforme e-commerciale",
+   "type": "examen",
+   "matiere": "optimisation-d-une-plateforme-e-commerciale",
+   "groupe": "G1",
+   "mention_pdf": "Optimisat plateforme - CC",
+   "seances": [
+    "2027-06-28-am"
+   ]
+  },
+  {
+   "id": "cc-2027-07-06-la-place-du-manager",
+   "date": "2027-07-06",
+   "debut": "09:00",
+   "fin": "17:00",
+   "titre": "Contrôle continu – La place du manager dans la structure",
+   "type": "examen",
+   "matiere": "la-place-du-manager-dans-la-structure",
+   "groupe": "G1",
+   "mention_pdf": "La place du manager - CC",
+   "seances": [
+    "2027-07-06-am",
+    "2027-07-06-pm"
+   ]
+  },
+  {
+   "id": "cc-2027-07-12-strategie-co",
+   "date": "2027-07-12",
+   "debut": "08:30",
+   "fin": "12:30",
+   "titre": "Contrôle continu – Stratégie commerciale et partenariats",
+   "type": "examen",
+   "matiere": "strategie-commerciale-et-partenariats",
+   "groupe": "G1",
+   "mention_pdf": "Stratégie co - CC",
+   "seances": [
+    "2027-07-12-am"
+   ]
+  },
+  {
+   "id": "periode-2027-08-30",
+   "date": "2027-08-30",
+   "debut": "08:30",
+   "fin": null,
+   "titre": "Examens finaux (du 30/08/2027 au 03/09/2027)",
+   "type": "examen",
+   "matiere": null,
+   "groupe": "G1",
+   "mention_pdf": "Examens finaux du 30 Août 2027 au 3 Septembre 2027",
+   "seances": []
+  }
+ ],
+ "periodes": [
+  {
+   "debut": "2027-08-30",
+   "fin": "2027-09-03",
+   "titre": "Examens finaux",
+   "type": "examens"
+  }
+ ],
+ "feries": [
+  {
+   "date": "2026-11-01",
+   "titre": "Toussaint"
+  },
+  {
+   "date": "2026-11-11",
+   "titre": "Armistice"
+  },
+  {
+   "date": "2026-12-25",
+   "titre": "Noël"
+  },
+  {
+   "date": "2027-01-01",
+   "titre": "Jour de l'an"
+  },
+  {
+   "date": "2027-03-29",
+   "titre": "Lundi de Pâques"
+  },
+  {
+   "date": "2027-05-01",
+   "titre": "Fête du travail"
+  },
+  {
+   "date": "2027-05-06",
+   "titre": "Ascension"
+  },
+  {
+   "date": "2027-05-08",
+   "titre": "Victoire 1945"
+  },
+  {
+   "date": "2027-05-17",
+   "titre": "Lundi de Pentecôte"
+  },
+  {
+   "date": "2027-07-14",
+   "titre": "Fête nationale"
+  },
+  {
+   "date": "2027-08-15",
+   "titre": "Assomption"
+  }
+ ]
+}

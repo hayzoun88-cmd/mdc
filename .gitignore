@@ -1,0 +1,11 @@
+# Le PDF de l'école reste en local (le dépôt est public)
+*.pdf
+__pycache__/
+.DS_Store
+
+# Captures d'écran (contiennent des photos de la classe) : ne jamais publier
+Capture*
+*.png
+*.jpg
+*.jpeg
+*.heic

@@ -1,0 +1,16 @@
+// =====================================================================
+//  CONFIGURATION — c'est le SEUL fichier à modifier pour brancher la base.
+//  (README, étape 2)
+//
+//  Ces deux valeurs sont PUBLIQUES par conception : elles finissent dans le
+//  navigateur de chaque visiteur. La sécurité est assurée par les règles de la
+//  base (lecture seule pour tous, écriture uniquement avec le code promo,
+//  vérifié côté serveur). Ne mettez JAMAIS ici la clé "service_role".
+//
+//  Tant que ces valeurs sont vides, l'application tourne en "mode démo" :
+//  les livrables sont enregistrés seulement dans votre navigateur.
+// =====================================================================
+window.CONFIG = {
+  SUPABASE_URL: "",       // ex. "https://abcdefghijkl.supabase.co"
+  SUPABASE_ANON_KEY: "",  // ex. "eyJhbGciOi..." (clé "anon" / "publishable")
+};
