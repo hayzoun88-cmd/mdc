@@ -214,6 +214,18 @@ delete from public.livrables where supprime_le is not null and supprime_le < now
 ```
 (supprime ce qui est dans la corbeille depuis plus de 30 jours)
 
+## Mode administrateur
+
+Les prénoms listés dans `js/config.js` (`ADMINS: ["Farid"]`) peuvent activer le mode admin : 👤 en haut → code admin.
+Le code admin est **différent** du code du groupe et vérifié par la base (choisir le prénom « Farid » ne suffit pas).
+En mode admin (🛡️) : supprimer définitivement un devoir de la corbeille, **vider la corbeille**, supprimer n'importe quel
+complément, retirer quelqu'un d'un groupe ou supprimer un groupe. Ces actions sont notées dans l'historique.
+
+Définir ou changer le code admin (Supabase → SQL Editor) :
+```sql
+update public.config_privee set admin_hash = extensions.crypt('NOUVEAU_CODE_ADMIN', extensions.gen_salt('bf')) where id = 1;
+```
+
 ## Notifications push : comment ça marche
 
 1. Un étudiant touche 🔔 : son appareil s'abonne (table `abonnements_push`, illisible depuis le site).

@@ -89,6 +89,29 @@
     return retour;
   }
 
+  /** Actions d'administration en mode démo */
+  function adminDemo(nom, p) {
+    let l = livrablesDemo(), c = lireLocal("mdc_demo_commentaires", []), g = travailDemo();
+    if (nom === "admin_supprimer_devoir") {
+      l = l.filter(x => x.id !== p.p_id); c = c.filter(x => x.livrable_ref !== p.p_id);
+      g.equipes = g.equipes.filter(e => e.livrable_id !== p.p_id);
+    } else if (nom === "admin_vider_corbeille") {
+      const ids = l.filter(x => x.supprime_le).map(x => x.id);
+      l = l.filter(x => !x.supprime_le); c = c.filter(x => !ids.includes(x.livrable_ref));
+      g.equipes = g.equipes.filter(e => !ids.includes(e.livrable_id));
+    } else if (nom === "admin_supprimer_commentaire") {
+      c = c.filter(x => x.id !== p.p_id);
+    } else if (nom === "admin_retirer_membre") {
+      const e = g.equipes.find(x => x.id === p.p_equipe);
+      if (e) e.membres = e.membres.filter(m => !memeNom(m, p.p_membre));
+      g.equipes = g.equipes.filter(x => x.membres.length);
+    } else if (nom === "admin_supprimer_groupe") {
+      g.equipes = g.equipes.filter(x => x.id !== p.p_equipe);
+    } else throw new Error("Action inconnue : " + nom);
+    ecrireLocal("mdc_demo_livrables", l); ecrireLocal("mdc_demo_commentaires", c); ecrireLocal("mdc_demo_groupes", g);
+    return null;
+  }
+
   function livrablesDemo() {
     let l = lireLocal("mdc_demo_livrables", null);
     if (!l) { l = exemplesDemo(); ecrireLocal("mdc_demo_livrables", l); }
@@ -255,6 +278,27 @@
       if (!modeSupabase) return actionDemo(nom, prenom, params);
       const { data, error } = await client.rpc(nom, { p_code: code, p_prenom: prenom, ...params });
       if (error) throw erreur(error);
+      return data;
+    },
+
+    // ---------- Administration (code admin séparé, vérifié par le serveur) ----------
+    async verifierAdmin(codeAdmin) {
+      if (!modeSupabase) return Boolean(codeAdmin);
+      const { data, error } = await client.rpc("verifier_admin", { p_admin: codeAdmin });
+      if (error) throw erreur(error);
+      return data === true;
+    },
+
+    /** Action d'administration : admin_supprimer_devoir, admin_vider_corbeille, admin_supprimer_commentaire,
+     *  admin_retirer_membre, admin_supprimer_groupe. */
+    async admin(codeAdmin, prenom, nom, params = {}) {
+      if (!modeSupabase) return adminDemo(nom, params);
+      const { data, error } = await client.rpc(nom, { p_admin: codeAdmin, p_prenom: prenom, ...params });
+      if (error) {
+        const err = erreur(error);
+        if (/code admin incorrect/i.test(error.message || "")) err.adminInvalide = true;
+        throw err;
+      }
       return data;
     },
 

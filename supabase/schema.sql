@@ -448,6 +448,94 @@ grant execute on function public.desabonner(text) to anon, authenticated;
 grant execute on function public.prendre_notifications(text) to anon, authenticated;
 grant execute on function public.supprimer_abonnement_expire(text, text) to anon, authenticated;
 
+-- ---------- Administration (mode admin, code séparé) ----------
+-- Le code admin est différent du code du groupe : choisir le prénom « Farid » ne suffit pas.
+alter table public.config_privee add column if not exists admin_hash text;
+
+create or replace function public._admin_ok(p_admin text) returns boolean
+language sql stable security definer set search_path = public, extensions as $$
+  select exists (select 1 from public.config_privee
+                 where admin_hash is not null and admin_hash = extensions.crypt(coalesce(p_admin, ''), admin_hash));
+$$;
+revoke execute on function public._admin_ok(text) from public, anon, authenticated;
+
+create or replace function public._exiger_admin(p_admin text, p_prenom text) returns void
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if not public._admin_ok(p_admin) then
+    perform pg_sleep(1);
+    raise exception 'Code admin incorrect' using errcode = '28000';
+  end if;
+  if char_length(trim(coalesce(p_prenom, ''))) not between 1 and 40 then raise exception 'Prénom requis'; end if;
+end $$;
+revoke execute on function public._exiger_admin(text, text) from public, anon, authenticated;
+
+create or replace function public.verifier_admin(p_admin text) returns boolean
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if public._admin_ok(p_admin) then return true; end if;
+  perform pg_sleep(1);
+  return false;
+end $$;
+
+-- Supprimer définitivement un devoir (avec ses groupes, fichiers et compléments)
+create or replace function public.admin_supprimer_devoir(p_admin text, p_prenom text, p_id uuid)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+declare v_titre text;
+begin
+  perform public._exiger_admin(p_admin, p_prenom);
+  delete from public.livrables where id = p_id returning titre into v_titre;
+  if v_titre is null then raise exception 'Devoir introuvable'; end if;
+  delete from public.commentaires where livrable_ref = p_id::text;
+  insert into public.historique (livrable_id, titre, prenom, action) values (p_id, v_titre, trim(p_prenom), 'suppression définitive (admin)');
+end $$;
+
+-- Vider la corbeille
+create or replace function public.admin_vider_corbeille(p_admin text, p_prenom text)
+returns int language plpgsql security definer set search_path = public, extensions as $$
+declare v_ids uuid[];
+begin
+  perform public._exiger_admin(p_admin, p_prenom);
+  with sup as (delete from public.livrables where supprime_le is not null returning id) select array_agg(id) into v_ids from sup;
+  if v_ids is null then return 0; end if;
+  delete from public.commentaires where livrable_ref = any (select unnest(v_ids)::text);
+  insert into public.historique (titre, prenom, action) values (cardinality(v_ids) || ' devoir(s)', trim(p_prenom), 'corbeille vidée (admin)');
+  return cardinality(v_ids);
+end $$;
+
+-- Supprimer n'importe quel complément
+create or replace function public.admin_supprimer_commentaire(p_admin text, p_prenom text, p_id uuid)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+begin
+  perform public._exiger_admin(p_admin, p_prenom);
+  delete from public.commentaires where id = p_id;
+end $$;
+
+-- Retirer quelqu'un de n'importe quel groupe (un groupe vide disparaît)
+create or replace function public.admin_retirer_membre(p_admin text, p_prenom text, p_equipe uuid, p_membre text)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+begin
+  perform public._exiger_admin(p_admin, p_prenom);
+  update public.equipes set membres = array(select m from unnest(membres) m where lower(m) <> lower(trim(p_membre)))
+  where id = p_equipe;
+  delete from public.equipes where id = p_equipe and cardinality(membres) = 0;
+end $$;
+
+-- Supprimer un groupe entier (avec ses fichiers)
+create or replace function public.admin_supprimer_groupe(p_admin text, p_prenom text, p_equipe uuid)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+begin
+  perform public._exiger_admin(p_admin, p_prenom);
+  delete from public.equipes where id = p_equipe;
+end $$;
+
+grant execute on function public.verifier_admin(text) to anon, authenticated;
+grant execute on function public.admin_supprimer_devoir(text, text, uuid) to anon, authenticated;
+grant execute on function public.admin_vider_corbeille(text, text) to anon, authenticated;
+grant execute on function public.admin_supprimer_commentaire(text, text, uuid) to anon, authenticated;
+grant execute on function public.admin_retirer_membre(text, text, uuid, text) to anon, authenticated;
+grant execute on function public.admin_supprimer_groupe(text, text, uuid) to anon, authenticated;
+
 -- ---------- Temps réel ----------
 -- (n'ajoute que les tables pas encore inscrites : on peut relancer ce fichier sans erreur)
 do $$

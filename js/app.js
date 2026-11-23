@@ -61,6 +61,9 @@
   /** Prénom de la personne connectée sur cet appareil. */
   const moi = () => (lireLocal("mdc_auth", null) || {}).prenom || "";
   const estMembre = (eq, prenom = moi()) => Boolean(eq && prenom && eq.membres.some(m => memeNom(m, prenom)));
+  /** Mode admin actif sur cet appareil ? (prénom autorisé + code admin vérifié par le serveur) */
+  const estAdmin = () => Boolean(lireLocal("mdc_admin", null)) && (CONFIG.ADMINS || []).some(p => memeNom(p, moi()));
+
   /** Mon groupe pour un livrable (ou undefined). */
   const monEquipe = livrableId => etat.equipes.find(e => e.livrable_id === livrableId && estMembre(e));
   const matiere = id => etat.matieres[id] || { nom: id || "Général", couleur: "#868e96", intervenant: "" };
@@ -306,6 +309,7 @@
       : !dl && !l.date_soutenance ? '<span class="compte">Sans date</span>' : "";
     const actions = corbeille
       ? `<button class="btn btn-petit" data-restaurer="${esc(l.id)}">↺ Restaurer</button>`
+        + (estAdmin() ? ` <button class="btn btn-petit btn-danger" data-admin-suppr-devoir="${esc(l.id)}">🗑 Supprimer définitivement</button>` : "")
       : l.officiel ? "" : `<button class="btn btn-petit" data-equipes="${esc(l.id)}">👥 Groupe</button>
          <button class="btn btn-petit" data-modifier="${esc(l.id)}">Modifier</button>
          <button class="btn btn-petit" data-supprimer="${esc(l.id)}">Supprimer</button>`;
@@ -348,7 +352,8 @@
     return `<div class="l-comms">
       ${liste.map(c => `<div class="comm">
         <div class="comm-qui"><strong>💬 ${esc(c.prenom)}</strong> <time>${fmt(new Date(c.le), { day: "numeric", month: "short" })}</time>
-          ${memeNom(c.prenom, moi()) ? `<button type="button" class="btn-x" data-comm-suppr="${esc(c.id)}" aria-label="Supprimer mon complément">✕</button>` : ""}</div>
+          ${memeNom(c.prenom, moi()) ? `<button type="button" class="btn-x" data-comm-suppr="${esc(c.id)}" aria-label="Supprimer mon complément">✕</button>`
+            : estAdmin() ? `<button type="button" class="btn-x" data-admin-suppr-comm="${esc(c.id)}" aria-label="Supprimer (admin)" title="Supprimer (admin)">🛡️✕</button>` : ""}</div>
         <div class="comm-txt">${esc(c.texte)}</div></div>`).join("")}
       ${ouvert
         ? `<form class="comm-form" data-comm-form="${esc(id)}">
@@ -435,9 +440,11 @@
     $("#liste-archives").innerHTML = archives.map(l => htmlLivrable(l, { archive: true })).join("") || '<p class="vide">Rien d\'archivé.</p>';
     const corb = etat.livrables.filter(l => l.supprime_le);
     $("#nb-corbeille").textContent = `(${corb.length})`;
-    $("#liste-corbeille").innerHTML = corb.map(l => htmlLivrable(l, { corbeille: true })).join("") || '<p class="vide">La corbeille est vide.</p>';
+    $("#liste-corbeille").innerHTML = (estAdmin() && corb.length ? '<button type="button" class="btn btn-petit btn-danger" data-admin-vider>🛡️ Vider la corbeille</button>' : "")
+      + (corb.map(l => htmlLivrable(l, { corbeille: true })).join("") || '<p class="vide">La corbeille est vide.</p>');
     const verbes = { ajout: "a ajouté", modification: "a modifié", suppression: "a mis à la corbeille", restauration: "a restauré",
-      "ajout pièce jointe": "a joint un fichier à", "suppression pièce jointe": "a retiré la pièce jointe" };
+      "ajout pièce jointe": "a joint un fichier à", "suppression pièce jointe": "a retiré la pièce jointe",
+      "suppression définitive (admin)": "🛡️ a supprimé définitivement", "corbeille vidée (admin)": "🛡️ a vidé la corbeille" };
     $("#liste-historique").innerHTML = etat.historique.map(h => `<li><strong>${esc(h.prenom)}</strong> ${verbes[h.action] || esc(h.action)}
       « ${esc(h.titre)} » <time>${fmt(new Date(h.le), { dateStyle: "short", timeStyle: "short" })}</time></li>`).join("") || '<li class="vide">Aucune modification pour l\'instant.</li>';
   }
@@ -497,9 +504,33 @@
     toast.minuteur = setTimeout(() => (t.hidden = true), 3500);
   }
 
+  /** Fenêtre « mon compte » : prénom, mode admin (pour les prénoms autorisés), déconnexion. */
+  function ouvrirMonCompte() {
+    const autorise = (CONFIG.ADMINS || []).some(p => memeNom(p, moi()));
+    $("#moi-titre").textContent = moi();
+    $("#moi-statut").textContent = estAdmin() ? "🛡️ Mode admin actif sur cet appareil."
+      : autorise ? "Entre ton code admin pour activer le mode administrateur." : "Connecté(e) avec le code du groupe.";
+    $("#form-admin").hidden = !autorise || estAdmin();
+    $("#btn-admin-off").hidden = !estAdmin();
+    $("#erreur-admin").hidden = true; $("#admin-code").value = "";
+    $("#dlg-moi").showModal();
+  }
+
+  /** Lance une action d'administration (code admin mémorisé sur l'appareil), puis recharge. */
+  async function agirAdmin(nom, params, message) {
+    try {
+      await Donnees.admin(lireLocal("mdc_admin", null), moi(), nom, params);
+      toast("🛡️ " + message);
+      await recharger();
+    } catch (e) {
+      if (e.adminInvalide) { ecrireLocal("mdc_admin", null); majEnteteMoi(); renderLivrables(); toast("Code admin plus valide : mode admin désactivé."); }
+      else toast("Erreur : " + e.message);
+    }
+  }
+
   /** Affiche le prénom connecté dans l'en-tête. */
   function majEnteteMoi() {
-    $("#moi-nom").textContent = moi();
+    $("#moi-nom").textContent = moi() + (estAdmin() ? " 🛡️" : "");
     $("#btn-moi").hidden = !moi();
   }
 
@@ -798,8 +829,11 @@
     const autres = groupes.filter(e => e !== mien);
     $("#esp-titre-autres").hidden = !autres.length;
     $("#esp-equipes").innerHTML = autres.map(e => `<div class="esp-equipe">
-        <div class="infos">${e.membres.map(esc).join(", ")}</div>
-        <button type="button" class="btn btn-petit" data-esp-rejoindre="${esc(e.id)}">Rejoindre</button></div>`).join("");
+        <div class="infos">${estAdmin()
+          ? e.membres.map(m => `<span class="puce-membre">${esc(m)}<button type="button" class="btn-x" data-admin-retirer="${esc(m)}" data-groupe="${esc(e.id)}" aria-label="Retirer ${esc(m)} (admin)">✕</button></span>`).join(" ")
+          : e.membres.map(esc).join(", ")}</div>
+        <button type="button" class="btn btn-petit" data-esp-rejoindre="${esc(e.id)}">Rejoindre</button>
+        ${estAdmin() ? `<button type="button" class="btn btn-petit btn-danger" data-admin-suppr-groupe="${esc(e.id)}" title="Supprimer ce groupe (admin)">🛡️ Supprimer</button>` : ""}</div>`).join("");
   }
 
   function brancherEspace() {
@@ -969,12 +1003,53 @@
   function brancherEvenements() {
     $$(".onglets button").forEach(b => b.addEventListener("click", () => allerOnglet(b.dataset.onglet)));
     // Mon compte : se déconnecter pour changer de prénom
-    $("#btn-moi").addEventListener("click", async () => {
-      if (!(await confirmer(`Tu es connecté(e) en tant que ${moi()}. Te déconnecter pour changer de prénom ?`, "Se déconnecter"))) return;
-      ecrireLocal("mdc_auth", null);
+    $("#btn-moi").addEventListener("click", ouvrirMonCompte);
+    $("#btn-deconnexion").addEventListener("click", async () => {
+      $("#dlg-moi").close();
+      ecrireLocal("mdc_auth", null); ecrireLocal("mdc_admin", null);
       majEnteteMoi(); renderLivrables();
       await autorisation();
     });
+    $("#form-admin").addEventListener("submit", async e => {
+      e.preventDefault();
+      const code = $("#admin-code").value.trim();
+      if (!code) return;
+      try {
+        if (!(await Donnees.verifierAdmin(code))) { $("#erreur-admin").textContent = "Code admin incorrect."; $("#erreur-admin").hidden = false; return; }
+      } catch (err) { $("#erreur-admin").textContent = "Erreur : " + err.message; $("#erreur-admin").hidden = false; return; }
+      ecrireLocal("mdc_admin", code);
+      $("#dlg-moi").close(); majEnteteMoi(); renderLivrables(); renderEspace();
+      toast("🛡️ Mode admin activé");
+    });
+    $("#btn-admin-off").addEventListener("click", () => {
+      ecrireLocal("mdc_admin", null);
+      $("#dlg-moi").close(); majEnteteMoi(); renderLivrables(); renderEspace();
+      toast("Mode admin désactivé.");
+    });
+    // Boutons admin (corbeille, compléments, groupes)
+    document.addEventListener("click", async e => {
+      const t = e.target.closest("[data-admin-suppr-devoir],[data-admin-vider],[data-admin-suppr-comm],[data-admin-retirer],[data-admin-suppr-groupe]");
+      if (!t) return;
+      e.stopPropagation();
+      const d = t.dataset;
+      if (d.adminSupprDevoir !== undefined) {
+        const l = etat.livrables.find(x => x.id === d.adminSupprDevoir);
+        if (await confirmer(`Supprimer définitivement « ${l ? l.titre : ""} » ? Impossible à annuler.`, "Supprimer définitivement"))
+          await agirAdmin("admin_supprimer_devoir", { p_id: d.adminSupprDevoir }, "Devoir supprimé définitivement.");
+      } else if (d.adminVider !== undefined) {
+        if (await confirmer("Vider la corbeille ? Tous les devoirs qu'elle contient seront supprimés définitivement.", "Vider la corbeille"))
+          await agirAdmin("admin_vider_corbeille", {}, "Corbeille vidée.");
+      } else if (d.adminSupprComm) {
+        if (await confirmer("Supprimer ce complément (admin) ?", "Supprimer"))
+          await agirAdmin("admin_supprimer_commentaire", { p_id: d.adminSupprComm }, "Complément supprimé.");
+      } else if (d.adminRetirer) {
+        if (await confirmer(`Retirer ${d.adminRetirer} de ce groupe (admin) ?`, "Retirer"))
+          await agirAdmin("admin_retirer_membre", { p_equipe: d.groupe, p_membre: d.adminRetirer }, "Membre retiré.");
+      } else if (d.adminSupprGroupe) {
+        if (await confirmer("Supprimer ce groupe et ses fichiers (admin) ?", "Supprimer"))
+          await agirAdmin("admin_supprimer_groupe", { p_equipe: d.adminSupprGroupe }, "Groupe supprimé.");
+      }
+    }, true);
     brancherEspace();
     $("#btn-theme").addEventListener("click", () => {
       const sombre = document.documentElement.dataset.theme === "sombre"

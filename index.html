@@ -18,7 +18,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="MDC G1">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=4">
+  <link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
   <!-- ===== En-tête ===== -->
@@ -213,6 +213,22 @@
     </div>
   </dialog>
 
+  <!-- ===== Fenêtre : mon compte (déconnexion, mode admin) ===== -->
+  <dialog id="dlg-moi" class="dialogue">
+    <h2>👤 <span id="moi-titre"></span></h2>
+    <p class="aide" id="moi-statut"></p>
+    <form id="form-admin" class="esp-ligne" hidden novalidate>
+      <input id="admin-code" type="password" autocomplete="off" placeholder="Code admin" aria-label="Code admin">
+      <button class="btn btn-principal">Activer</button>
+    </form>
+    <p id="erreur-admin" class="erreur" hidden></p>
+    <div class="actions">
+      <button type="button" class="btn" id="btn-admin-off" hidden>Quitter le mode admin</button>
+      <button type="button" class="btn" id="btn-deconnexion">Se déconnecter</button>
+      <button type="button" class="btn btn-principal" data-fermer>Fermer</button>
+    </div>
+  </dialog>
+
   <!-- ===== Fenêtre : aide (notifications sur iPhone, notifications bloquées…) ===== -->
   <dialog id="dlg-aide" class="dialogue">
     <div id="aide-contenu"></div>
@@ -232,8 +248,8 @@
 
   <!-- Bibliothèque Supabase (version figée) puis nos scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-  <script src="js/config.js?v=4"></script>
-  <script src="js/donnees.js?v=4"></script>
-  <script src="js/app.js?v=4"></script>
+  <script src="js/config.js?v=5"></script>
+  <script src="js/donnees.js?v=5"></script>
+  <script src="js/app.js?v=5"></script>
 </body>
 </html>

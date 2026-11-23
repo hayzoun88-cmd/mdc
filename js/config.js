@@ -14,6 +14,9 @@ window.CONFIG = {
   SUPABASE_URL: "https://wfnddfzbsgkidvztukhk.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_wZBdwScjcBCLzPC-8OmywQ_g8bjuHg5", // clé publique "publishable" (jamais la clé secrète)
 
+  // Prénoms qui peuvent activer le mode administrateur (il faut AUSSI le code admin, vérifié par le serveur)
+  ADMINS: ["Farid"],
+
   // Clé PUBLIQUE des notifications push (VAPID). La clé privée, elle, n'est que dans Supabase.
   VAPID_PUBLIQUE: "BA_QIUOoL_DfrQ2UjYY5BWxPI4TiFxdbnDuOqLTDHRmjU_rYM8NF1jDz5dxPcvGsMcnU9GEIscap2JzMel7tmtY",
 };
