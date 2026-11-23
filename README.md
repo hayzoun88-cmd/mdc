@@ -140,6 +140,8 @@ et les livrables sont enregistrés seulement dans votre navigateur. N'importe qu
 5. Sur téléphone, les étudiants peuvent faire **Partager → Sur l'écran d'accueil** pour l'avoir comme une appli.
 
 À chaque nouveau *commit + push*, le site se met à jour tout seul en 1 à 2 minutes.
+Si vous modifiez `css/` ou `js/`, augmentez le numéro `?v=2` (→ `?v=3`…) dans `index.html` :
+cela oblige les téléphones à charger la nouvelle version au lieu de garder l'ancienne en mémoire.
 
 ---
 
