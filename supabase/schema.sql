@@ -31,6 +31,9 @@ create table if not exists public.livrables (
   supprime_le      timestamptz           -- rempli = dans la corbeille
 );
 
+-- Prénom de la personne qui a ajouté le devoir (« Ajouté par Ema »)
+alter table public.livrables add column if not exists cree_par text not null default '';
+
 -- (re)pose la liste des types autorisés, même si la table existait déjà
 alter table public.livrables drop constraint if exists livrables_type_check;
 alter table public.livrables add constraint livrables_type_check
@@ -106,11 +109,11 @@ begin
   perform public._controle(p_code, p_prenom);
   if p_id is null then
     insert into public.livrables (matiere, titre, description, date_limite, groupe, type,
-                                  mode_rendu, lien, membres, date_soutenance)
+                                  mode_rendu, lien, membres, date_soutenance, cree_par)
     values (p_data->>'matiere', p_data->>'titre', coalesce(p_data->>'description', ''),
             (p_data->>'date_limite')::timestamptz, coalesce(p_data->>'groupe', 'G1'), p_data->>'type',
             coalesce(p_data->>'mode_rendu', ''), coalesce(p_data->>'lien', ''),
-            coalesce(p_data->>'membres', ''), nullif(p_data->>'date_soutenance', '')::timestamptz)
+            coalesce(p_data->>'membres', ''), nullif(p_data->>'date_soutenance', '')::timestamptz, trim(p_prenom))
     returning id into v_id;
     insert into public.historique (livrable_id, titre, prenom, action)
     values (v_id, p_data->>'titre', trim(p_prenom), 'ajout');
@@ -149,6 +152,49 @@ end $$;
 grant execute on function public.verifier_code(text) to anon, authenticated;
 grant execute on function public.enregistrer_livrable(text, text, uuid, jsonb) to anon, authenticated;
 grant execute on function public.corbeille_livrable(text, text, uuid, boolean) to anon, authenticated;
+
+-- Devoirs ajoutés avant l'existence de « cree_par » : on retrouve le prénom dans l'historique
+update public.livrables l set cree_par = h.prenom
+from public.historique h
+where h.livrable_id = l.id and h.action = 'ajout' and l.cree_par = '';
+
+-- ---------- Compléments à la consigne (commentaires) ----------
+-- livrable_ref = id du devoir, ou « pdf:… » pour un CC / rendu du planning officiel.
+create table if not exists public.commentaires (
+  id            uuid primary key default gen_random_uuid(),
+  livrable_ref  text not null check (char_length(livrable_ref) between 1 and 120),
+  prenom        text not null,
+  texte         text not null check (char_length(texte) between 1 and 1000),
+  le            timestamptz not null default now()
+);
+alter table public.commentaires enable row level security;
+drop policy if exists "lecture publique" on public.commentaires;
+create policy "lecture publique" on public.commentaires for select to anon, authenticated using (true);
+revoke insert, update, delete on public.commentaires from anon, authenticated;
+
+create or replace function public.ajouter_commentaire(p_code text, p_prenom text, p_livrable text, p_texte text)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+begin
+  perform public._controle(p_code, p_prenom);
+  if (select count(*) from public.commentaires where livrable_ref = p_livrable) >= 100 then
+    raise exception '100 compléments maximum par devoir';
+  end if;
+  insert into public.commentaires (livrable_ref, prenom, texte) values (p_livrable, trim(p_prenom), trim(p_texte));
+end $$;
+
+-- On ne peut supprimer que ses propres compléments
+create or replace function public.supprimer_commentaire(p_code text, p_prenom text, p_id uuid)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+begin
+  perform public._controle(p_code, p_prenom);
+  if exists (select 1 from public.commentaires where id = p_id and lower(prenom) <> lower(trim(p_prenom))) then
+    raise exception 'Tu ne peux supprimer que tes propres compléments.';
+  end if;
+  delete from public.commentaires where id = p_id;
+end $$;
+
+grant execute on function public.ajouter_commentaire(text, text, text, text) to anon, authenticated;
+grant execute on function public.supprimer_commentaire(text, text, uuid) to anon, authenticated;
 
 -- ---------- Pièces jointes ----------
 -- Les fichiers sont stockés dans la base (en base64), 5 Mo max chacun, 10 max par livrable.
@@ -322,7 +368,7 @@ grant execute on function public.supprimer_piece_jointe(text, text, uuid) to ano
 do $$
 declare t text;
 begin
-  foreach t in array array['livrables', 'historique', 'equipes'] loop
+  foreach t in array array['livrables', 'historique', 'equipes', 'commentaires'] loop
     if not exists (select 1 from pg_publication_tables
                    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = t) then
       execute format('alter publication supabase_realtime add table public.%I', t);

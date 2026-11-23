@@ -40,6 +40,9 @@
     planning: null, matieres: {}, seancesParDate: new Map(), evalsParDate: new Map(), feries: new Map(),
     livrables: [], historique: [], piecesJointes: [], prenoms: [],
     equipes: [],          // groupes de travail (qui est avec qui, par livrable)
+    commentaires: [],     // compléments à la consigne, laissés par les étudiants
+    commOuvert: null,     // devoir dont le champ « Compléter la consigne » est ouvert
+    brouillons: {},       // texte en cours de saisie, par devoir (pour ne pas le perdre)
     espace: { livrable: null }, // livrable dont la fenêtre « Groupe » est ouverte
     faits: lireLocal("mdc_faits", {}),
     mode: "semaine", ref: depuisIso(jourOuvre()), jourSel: jourOuvre(), nbListe: 25,
@@ -305,10 +308,12 @@
         <div>🗓 ${l.type === "examen" ? "Le" : "À rendre le"} ${quand(dl)}</div>
         ${l.date_soutenance ? `<div>🎤 Soutenance le ${quand(new Date(l.date_soutenance))}</div>` : ""}
         ${l.mode_rendu ? `<div>📤 ${esc(l.mode_rendu)}</div>` : ""}
+        ${l.cree_par ? `<div>✍️ Ajouté par ${esc(l.cree_par)}</div>` : ""}
         ${lienSur(l.lien) ? `<div>🔗 <a href="${esc(l.lien)}" target="_blank" rel="noopener noreferrer">${esc(l.lien)}</a></div>` : ""}
         ${l.membres ? `<div>👥 ${esc(l.membres)}</div>` : ""}
       </div>
       ${l.description ? `<div class="l-desc">${esc(l.description)}</div>` : ""}
+      ${!corbeille && !compact ? htmlCommentaires(l.id) : ""}
       ${htmlPiecesJointes(l.id)}
       ${!corbeille ? htmlMonEquipe(l.id) : ""}
       ${actions ? `<div class="l-actions">${actions}</div>` : ""}
@@ -316,6 +321,24 @@
   }
 
   const tailleLisible = o => (o < 1024 * 1024 ? `${Math.max(1, Math.round(o / 1024))} Ko` : `${(o / 1024 / 1024).toFixed(1).replace(".", ",")} Mo`);
+
+  /** Compléments à la consigne d'un devoir + champ pour en ajouter un. */
+  function htmlCommentaires(id) {
+    const liste = etat.commentaires.filter(c => c.livrable_ref === id);
+    const ouvert = etat.commOuvert === id;
+    return `<div class="l-comms">
+      ${liste.map(c => `<div class="comm">
+        <div class="comm-qui"><strong>💬 ${esc(c.prenom)}</strong> <time>${fmt(new Date(c.le), { day: "numeric", month: "short" })}</time>
+          ${memeNom(c.prenom, moi()) ? `<button type="button" class="btn-x" data-comm-suppr="${esc(c.id)}" aria-label="Supprimer mon complément">✕</button>` : ""}</div>
+        <div class="comm-txt">${esc(c.texte)}</div></div>`).join("")}
+      ${ouvert
+        ? `<form class="comm-form" data-comm-form="${esc(id)}">
+            <textarea data-comm-input="${esc(id)}" rows="2" maxlength="1000" placeholder="Ex. : le prof a dit 10 pages max, police 12…">${esc(etat.brouillons[id] || "")}</textarea>
+            <div class="comm-boutons"><button type="button" class="btn btn-petit" data-comm-annuler>Annuler</button>
+            <button class="btn btn-petit btn-principal">Ajouter</button></div></form>`
+        : `<button type="button" class="lien comm-lien" data-comm-ouvrir="${esc(id)}">💬 Compléter la consigne</button>`}
+    </div>`;
+  }
 
   /** Ligne « Ton groupe : … » sur la carte d'un livrable (cliquable). */
   function htmlMonEquipe(livrableId) {
@@ -362,11 +385,22 @@
     return liste.filter(l => (!fm || l.matiere === fm) && (!ft || l.type === ft)
       && (!masquerFaits || !etat.faits[l.id])
       && (!mesEquipes || monEquipe(l.id))
-      && (!q || [l.titre, l.description, matiere(l.matiere).nom, l.membres, l.mode_rendu,
+      && (!q || [l.titre, l.description, matiere(l.matiere).nom, l.membres, l.mode_rendu, l.cree_par,
+        ...etat.commentaires.filter(c => c.livrable_ref === l.id).map(c => c.texte),
         ...etat.piecesJointes.filter(p => p.livrable_id === l.id).map(p => p.nom)].join(" ").toLowerCase().includes(q)));
   }
 
   function renderLivrables() {
+    const actif = document.activeElement;
+    const saisie = actif && actif.dataset && actif.dataset.commInput ? { id: actif.dataset.commInput, pos: actif.selectionStart } : null;
+    renderListeLivrables();
+    if (saisie) {
+      const champ = document.querySelector(`[data-comm-input="${CSS.escape(saisie.id)}"]`);
+      if (champ) { champ.focus(); champ.setSelectionRange(saisie.pos, saisie.pos); }
+    }
+  }
+
+  function renderListeLivrables() {
     const filtres = filtrer(livrablesVisibles());
     const aVenir = filtres.filter(prochaineEcheance).sort((a, b) => prochaineEcheance(a) - prochaineEcheance(b));
     const archives = filtres.filter(l => !prochaineEcheance(l)).sort((a, b) => new Date(b.date_limite) - new Date(a.date_limite));
@@ -777,8 +811,9 @@
   // =====================================================================
   async function recharger() {
     try {
-      [etat.livrables, etat.historique, etat.piecesJointes, etat.equipes] = await Promise.all([
-        Donnees.chargerLivrables(), Donnees.chargerHistorique(), Donnees.chargerPiecesJointes(), Donnees.chargerGroupes()]);
+      [etat.livrables, etat.historique, etat.piecesJointes, etat.equipes, etat.commentaires] = await Promise.all([
+        Donnees.chargerLivrables(), Donnees.chargerHistorique(), Donnees.chargerPiecesJointes(), Donnees.chargerGroupes(),
+        Donnees.chargerCommentaires()]);
     } catch (e) { toast("Impossible de charger les données : " + e.message); }
     remplirFiltres();
     renderTout();
@@ -843,6 +878,36 @@
       if (x0 === null || etat.mode === "liste") return;
       const dx = e.changedTouches[0].clientX - x0; x0 = null;
       if (Math.abs(dx) > 70) deplacer(dx < 0 ? 1 : -1);
+    });
+
+    // Compléments à la consigne
+    document.addEventListener("input", e => {
+      const id = e.target.dataset && e.target.dataset.commInput;
+      if (id) etat.brouillons[id] = e.target.value;
+    });
+    document.addEventListener("click", async e => {
+      const t = e.target.closest("[data-comm-ouvrir],[data-comm-annuler],[data-comm-suppr]");
+      if (!t) return;
+      if (t.dataset.commOuvrir) {
+        etat.commOuvert = t.dataset.commOuvrir; renderLivrables();
+        const champ = document.querySelector(`[data-comm-input="${CSS.escape(etat.commOuvert)}"]`);
+        if (champ) champ.focus();
+      } else if (t.dataset.commAnnuler !== undefined) {
+        etat.commOuvert = null; renderLivrables();
+      } else if (t.dataset.commSuppr) {
+        if (await confirmer("Supprimer ton complément ?", "Supprimer")) await agir("supprimer_commentaire", { p_id: t.dataset.commSuppr });
+      }
+    });
+    document.addEventListener("submit", async e => {
+      const id = e.target.dataset && e.target.dataset.commForm;
+      if (!id) return;
+      e.preventDefault();
+      const texte = (etat.brouillons[id] || "").trim();
+      if (!texte) return;
+      if (await agir("ajouter_commentaire", { p_livrable: id, p_texte: texte })) {
+        delete etat.brouillons[id]; etat.commOuvert = null; renderLivrables();
+        toast("Complément ajouté ✔ Toute la classe le voit.");
+      }
     });
 
     // Livrables : filtres

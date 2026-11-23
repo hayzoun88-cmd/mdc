@@ -11,6 +11,9 @@ Application web pour le **groupe 1 (G1)** de la promo **MDC 2025-2027 (ISTEF)**.
 - **Connexion** : à la première visite, chacun choisit **son prénom** dans la liste de la classe et entre **le code du groupe**
   (le même pour tout le monde). C'est mémorisé sur l'appareil. Bouton 👤 en haut pour changer de prénom.
 - **Ajout collaboratif** : tout le monde peut ajouter, modifier ou supprimer un devoir. Tout le monde voit les changements en temps réel.
+  Chaque devoir affiche **« Ajouté par … »** (le prénom de la personne connectée qui l'a créé).
+- **Compléter la consigne** : sous chaque devoir (y compris les CC officiels), n'importe qui peut ajouter un complément
+  (« le prof a dit 10 pages max »…). Chacun peut supprimer ses propres compléments.
 - **Devoirs de groupe** : bouton **👥 Groupe** sur chaque devoir. On crée son groupe (ou on rejoint celui d'un camarade),
   on ajoute ses camarades d'un geste, et on dépose les **fichiers du groupe**. C'est tout : simple à comprendre.
   Filtre « Mes groupes » dans l'onglet Devoirs.

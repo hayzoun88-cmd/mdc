@@ -22,14 +22,14 @@
     const jour = (n, h, m) => { const d = new Date(); d.setDate(d.getDate() + n); d.setHours(h, m, 0, 0); return d.toISOString(); };
     const base = { lien: "", membres: "", date_soutenance: null, supprime_le: null, cree_le: new Date().toISOString() };
     return [
-      { ...base, id: "demo-1", matiere: "data-driven-commercial", titre: "[Exemple] Tableau de bord commercial",
+      { ...base, id: "demo-1", cree_par: "Ema", matiere: "data-driven-commercial", titre: "[Exemple] Tableau de bord commercial",
         description: "Construire un tableau de bord de 5 indicateurs sur votre entreprise d'accueil. 3 pages max + annexe Excel.",
         date_limite: jour(1, 23, 59), groupe: "G1", type: "dossier", mode_rendu: "Plateforme de l'école" },
-      { ...base, id: "demo-2", matiere: "business-plan", titre: "[Exemple] Business plan – projet de groupe",
+      { ...base, id: "demo-2", cree_par: "Lucas", matiere: "business-plan", titre: "[Exemple] Business plan – projet de groupe",
         description: "Business plan complet d'un nouveau service. Dossier à rendre, puis soutenance de 15 min par groupe.",
         date_limite: jour(5, 18, 0), groupe: "G1", type: "projet", mode_rendu: "Mail",
         date_soutenance: jour(12, 9, 0) },
-      { ...base, id: "demo-3", matiere: "leadership-et-coaching", titre: "[Exemple] Étude de cas – style de management",
+      { ...base, id: "demo-3", cree_par: "Mina", matiere: "leadership-et-coaching", titre: "[Exemple] Étude de cas – style de management",
         description: "Analyse d'un cas réel : identifier le style de leadership et proposer un plan de coaching.",
         date_limite: jour(16, 12, 0), groupe: "G1", type: "etude", mode_rendu: "Papier" },
     ];
@@ -58,6 +58,17 @@
       ecrireLocal("mdc_demo_pj", lireLocal("mdc_demo_pj", []).filter(x => !vides.includes(x.equipe_id)));
     };
     let retour = null;
+    if (nom === "ajouter_commentaire" || nom === "supprimer_commentaire") {
+      const c = lireLocal("mdc_demo_commentaires", []);
+      if (nom === "ajouter_commentaire") {
+        c.push({ id: "c-" + Date.now().toString(36), livrable_ref: p.p_livrable, prenom, texte: p.p_texte, le: new Date().toISOString() });
+      } else {
+        const x = c.find(y => y.id === p.p_id);
+        if (x && !memeNom(x.prenom, prenom)) throw new Error("Tu ne peux supprimer que tes propres compléments.");
+      }
+      ecrireLocal("mdc_demo_commentaires", nom === "ajouter_commentaire" ? c : c.filter(y => y.id !== p.p_id));
+      return null;
+    }
     if (nom === "creer_equipe") {
       retirerPartout(p.p_livrable, prenom);
       retour = "eq-" + Date.now().toString(36);
@@ -133,7 +144,7 @@
           l[i] = { ...l[i], ...champs, modifie_le: new Date().toISOString() };
         } else {
           id = "demo-" + Date.now();
-          l.push({ ...champs, id, supprime_le: null, cree_le: new Date().toISOString() });
+          l.push({ ...champs, id, cree_par: prenom, supprime_le: null, cree_le: new Date().toISOString() });
         }
         ecrireLocal("mdc_demo_livrables", l);
         journaliserDemo(id, champs.titre, prenom, action);
@@ -224,7 +235,21 @@
       return data;
     },
 
-    /** Action de groupe (creer_equipe, rejoindre_equipe, quitter_equipe), vérifiée par le serveur. */
+    /** Compléments à la consigne de tous les devoirs. */
+    async chargerCommentaires() {
+      if (!modeSupabase) {
+        if (lireLocal("mdc_demo_commentaires", null) === null) ecrireLocal("mdc_demo_commentaires", [
+          { id: "c-demo", livrable_ref: "demo-1", prenom: "Lucas", le: new Date().toISOString(),
+            texte: "Le prof a précisé en cours : police 12, et mettre les sources en annexe." }]);
+        return lireLocal("mdc_demo_commentaires", []);
+      }
+      const { data, error } = await client.from("commentaires").select("*").order("le");
+      if (error) throw erreur(error);
+      return data;
+    },
+
+    /** Action vérifiée par le serveur : groupes (creer_equipe, rejoindre_equipe, quitter_equipe)
+     *  ou compléments (ajouter_commentaire, supprimer_commentaire). */
     async action(code, prenom, nom, params) {
       if (!modeSupabase) return actionDemo(nom, prenom, params);
       const { data, error } = await client.rpc(nom, { p_code: code, p_prenom: prenom, ...params });
@@ -243,6 +268,7 @@
         .on("postgres_changes", { event: "*", schema: "public", table: "livrables" }, () => rappel())
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "historique" }, () => rappel())
         .on("postgres_changes", { event: "*", schema: "public", table: "equipes" }, () => rappel())
+        .on("postgres_changes", { event: "*", schema: "public", table: "commentaires" }, () => rappel())
         .subscribe();
     },
   };

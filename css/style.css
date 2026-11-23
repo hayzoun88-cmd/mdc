@@ -220,6 +220,16 @@ input:focus, select:focus, textarea:focus, button:focus-visible { outline: 2px s
 .l-infos a { color: var(--accent); }
 .l-desc { white-space: pre-wrap; font-size: .88rem; margin-top: .45rem; overflow-wrap: anywhere; }
 .compact .l-desc, .compact .l-actions, .compact .l-infos > :not(:first-child) { display: none; }
+/* Compléments à la consigne */
+.l-comms { margin-top: .5rem; display: grid; gap: .35rem; }
+.comm { background: var(--accent-doux); border-radius: 10px; padding: .4rem .6rem; font-size: .86rem; }
+.comm-qui { display: flex; align-items: center; gap: .4rem; font-size: .78rem; }
+.comm-qui time { color: var(--texte-doux); }
+.comm-qui .btn-x { margin-left: auto; border: 0; background: none; cursor: pointer; color: var(--texte-doux); }
+.comm-txt { white-space: pre-wrap; overflow-wrap: anywhere; margin-top: .1rem; }
+.comm-lien { font-size: .85rem; justify-self: start; }
+.comm-form { display: grid; gap: .35rem; }
+.comm-boutons { display: flex; gap: .35rem; justify-content: flex-end; }
 .l-actions { display: flex; gap: .4rem; margin-top: .55rem; justify-content: flex-end; }
 .repli summary { cursor: pointer; font-weight: 600; }
 /* ---------- Travail de groupe ---------- */
