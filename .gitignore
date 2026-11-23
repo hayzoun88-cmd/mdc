@@ -28,3 +28,5 @@ connexion-supabase-terminal.txt
 # Fichiers temporaires de la ligne de commande Supabase
 supabase/.temp/
 activer-admin-supabase.txt
+mot-de-passe-admin.txt
+mise-a-jour-mots-de-passe.txt

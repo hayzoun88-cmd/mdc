@@ -448,6 +448,97 @@ grant execute on function public.desabonner(text) to anon, authenticated;
 grant execute on function public.prendre_notifications(text) to anon, authenticated;
 grant execute on function public.supprimer_abonnement_expire(text, text) to anon, authenticated;
 
+-- ---------- Mots de passe personnels ----------
+-- Chaque étudiant choisit SON mot de passe (stocké haché, illisible).
+-- Tant qu'un prénom n'a pas de mot de passe, le code du groupe sert à le créer.
+-- Une fois créé, seul ce mot de passe permet d'agir sous ce prénom.
+create table if not exists public.comptes (
+  prenom_norm  text primary key,              -- prénom en minuscules, sans espaces autour
+  prenom       text not null,
+  mdp_hash     text not null,
+  cree_le      timestamptz not null default now(),
+  modifie_le   timestamptz not null default now()
+);
+alter table public.comptes enable row level security;
+revoke all on public.comptes from anon, authenticated;
+
+-- Identité valide ? (mot de passe personnel si le prénom en a un, sinon code du groupe)
+create or replace function public._identite_ok(p_code text, p_prenom text) returns boolean
+language plpgsql stable security definer set search_path = public, extensions as $$
+declare v_hash text;
+begin
+  select mdp_hash into v_hash from public.comptes where prenom_norm = lower(trim(coalesce(p_prenom, '')));
+  if v_hash is not null then return v_hash = extensions.crypt(coalesce(p_code, ''), v_hash); end if;
+  return public._code_ok(p_code);
+end $$;
+revoke execute on function public._identite_ok(text, text) from public, anon, authenticated;
+
+-- Contrôle utilisé par TOUTES les actions (ajout, modification, groupes, compléments…)
+create or replace function public._controle(p_code text, p_prenom text) returns void
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if char_length(trim(coalesce(p_prenom, ''))) not between 1 and 40 then
+    raise exception 'Prénom requis (40 caractères max)';
+  end if;
+  if not public._identite_ok(p_code, p_prenom) then
+    perform pg_sleep(1);
+    raise exception 'Identifiants incorrects' using errcode = '28000';
+  end if;
+end $$;
+revoke execute on function public._controle(text, text) from public, anon, authenticated;
+
+-- Ce prénom a-t-il déjà un mot de passe ?
+create or replace function public.compte_existe(p_prenom text) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.comptes where prenom_norm = lower(trim(coalesce(p_prenom, ''))));
+$$;
+
+-- Vérifie prénom + mot de passe (ou code du groupe si pas encore de mot de passe)
+create or replace function public.verifier_identite(p_prenom text, p_code text) returns boolean
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if public._identite_ok(p_code, p_prenom) then return true; end if;
+  perform pg_sleep(1);
+  return false;
+end $$;
+
+-- Créer son mot de passe (une seule fois, avec le code du groupe)
+create or replace function public.creer_mot_de_passe(p_code_groupe text, p_prenom text, p_mdp text)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if not public._code_ok(p_code_groupe) then
+    perform pg_sleep(1);
+    raise exception 'Code du groupe incorrect' using errcode = '28000';
+  end if;
+  if char_length(trim(coalesce(p_prenom, ''))) not between 1 and 40 then raise exception 'Prénom requis'; end if;
+  if char_length(coalesce(p_mdp, '')) not between 6 and 72 then raise exception 'Mot de passe : 6 caractères minimum'; end if;
+  if public._code_ok(p_mdp) then raise exception 'Choisis un mot de passe différent du code du groupe'; end if;
+  if public.compte_existe(p_prenom) then
+    raise exception 'Ce prénom a déjà un mot de passe. Si tu l''as oublié, demande à Farid de le réinitialiser.';
+  end if;
+  insert into public.comptes (prenom_norm, prenom, mdp_hash)
+  values (lower(trim(p_prenom)), trim(p_prenom), extensions.crypt(p_mdp, extensions.gen_salt('bf')));
+end $$;
+
+-- Changer son mot de passe
+create or replace function public.changer_mot_de_passe(p_prenom text, p_ancien text, p_nouveau text)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if not public.compte_existe(p_prenom) or not public._identite_ok(p_ancien, p_prenom) then
+    perform pg_sleep(1);
+    raise exception 'Ancien mot de passe incorrect' using errcode = '28000';
+  end if;
+  if char_length(coalesce(p_nouveau, '')) not between 6 and 72 then raise exception 'Mot de passe : 6 caractères minimum'; end if;
+  if public._code_ok(p_nouveau) then raise exception 'Choisis un mot de passe différent du code du groupe'; end if;
+  update public.comptes set mdp_hash = extensions.crypt(p_nouveau, extensions.gen_salt('bf')), modifie_le = now()
+  where prenom_norm = lower(trim(p_prenom));
+end $$;
+
+grant execute on function public.compte_existe(text) to anon, authenticated;
+grant execute on function public.verifier_identite(text, text) to anon, authenticated;
+grant execute on function public.creer_mot_de_passe(text, text, text) to anon, authenticated;
+grant execute on function public.changer_mot_de_passe(text, text, text) to anon, authenticated;
+
 -- ---------- Administration (mode admin, code séparé) ----------
 -- Le code admin est différent du code du groupe : choisir le prénom « Farid » ne suffit pas.
 alter table public.config_privee add column if not exists admin_hash text;
@@ -528,6 +619,20 @@ begin
   perform public._exiger_admin(p_admin, p_prenom);
   delete from public.equipes where id = p_equipe;
 end $$;
+
+-- Mot de passe oublié : l'admin l'efface, la personne en recrée un avec le code du groupe
+create or replace function public.admin_reinitialiser_mdp(p_admin text, p_prenom text, p_cible text)
+returns boolean language plpgsql security definer set search_path = public, extensions as $$
+declare v_ok boolean;
+begin
+  perform public._exiger_admin(p_admin, p_prenom);
+  delete from public.comptes where prenom_norm = lower(trim(coalesce(p_cible, ''))) returning true into v_ok;
+  if v_ok then
+    insert into public.historique (titre, prenom, action) values (trim(p_cible), trim(p_prenom), 'mot de passe réinitialisé (admin)');
+  end if;
+  return coalesce(v_ok, false);
+end $$;
+grant execute on function public.admin_reinitialiser_mdp(text, text, text) to anon, authenticated;
 
 grant execute on function public.verifier_admin(text) to anon, authenticated;
 grant execute on function public.admin_supprimer_devoir(text, text, uuid) to anon, authenticated;

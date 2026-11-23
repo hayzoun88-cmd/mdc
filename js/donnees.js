@@ -107,6 +107,10 @@
       g.equipes = g.equipes.filter(x => x.membres.length);
     } else if (nom === "admin_supprimer_groupe") {
       g.equipes = g.equipes.filter(x => x.id !== p.p_equipe);
+    } else if (nom === "admin_reinitialiser_mdp") {
+      const comptes = lireLocal("mdc_demo_comptes", {}), cle = String(p.p_cible).trim().toLowerCase();
+      const existait = Boolean(comptes[cle]); delete comptes[cle]; ecrireLocal("mdc_demo_comptes", comptes);
+      return existait;
     } else throw new Error("Action inconnue : " + nom);
     ecrireLocal("mdc_demo_livrables", l); ecrireLocal("mdc_demo_commentaires", c); ecrireLocal("mdc_demo_groupes", g);
     return null;
@@ -126,7 +130,7 @@
   // Transforme une erreur Supabase en message lisible
   function erreur(e) {
     const msg = (e && e.message) || String(e);
-    if (/code promo incorrect/i.test(msg)) { const err = new Error("Code promo incorrect."); err.codeInvalide = true; return err; }
+    if (/code promo incorrect|identifiants incorrects/i.test(msg)) { const err = new Error("Prénom ou mot de passe incorrect."); err.codeInvalide = true; return err; }
     return new Error(msg);
   }
 
@@ -148,6 +152,51 @@
       const { data, error } = await client.from("historique").select("*").order("le", { ascending: false }).limit(100);
       if (error) throw erreur(error);
       return data;
+    },
+
+    // ---------- Mots de passe personnels ----------
+    // (en mode démo, les « comptes » sont gardés dans ce navigateur, sans sécurité : c'est juste pour tester)
+    /** Ce prénom a-t-il déjà son mot de passe ? */
+    async compteExiste(prenom) {
+      if (!modeSupabase) return Boolean(lireLocal("mdc_demo_comptes", {})[String(prenom).trim().toLowerCase()]);
+      const { data, error } = await client.rpc("compte_existe", { p_prenom: prenom });
+      if (error) throw erreur(error);
+      return data === true;
+    },
+
+    /** Prénom + mot de passe corrects ? (ou code du groupe si pas encore de mot de passe) */
+    async verifierIdentite(prenom, code) {
+      if (!modeSupabase) {
+        const c = lireLocal("mdc_demo_comptes", {})[String(prenom).trim().toLowerCase()];
+        return c ? c === code : Boolean(code);
+      }
+      const { data, error } = await client.rpc("verifier_identite", { p_prenom: prenom, p_code: code });
+      if (error) throw erreur(error);
+      return data === true;
+    },
+
+    /** Crée le mot de passe personnel (une seule fois, avec le code du groupe). */
+    async creerMotDePasse(codeGroupe, prenom, mdp) {
+      if (!modeSupabase) {
+        const c = lireLocal("mdc_demo_comptes", {}), cle = String(prenom).trim().toLowerCase();
+        if (c[cle]) throw new Error("Ce prénom a déjà un mot de passe.");
+        if (mdp.length < 6) throw new Error("Mot de passe : 6 caractères minimum");
+        c[cle] = mdp; ecrireLocal("mdc_demo_comptes", c); return;
+      }
+      const { error } = await client.rpc("creer_mot_de_passe", { p_code_groupe: codeGroupe, p_prenom: prenom, p_mdp: mdp });
+      if (error) throw new Error(error.message);
+    },
+
+    /** Change son mot de passe. */
+    async changerMotDePasse(prenom, ancien, nouveau) {
+      if (!modeSupabase) {
+        const c = lireLocal("mdc_demo_comptes", {}), cle = String(prenom).trim().toLowerCase();
+        if (c[cle] !== ancien) throw new Error("Ancien mot de passe incorrect");
+        if (nouveau.length < 6) throw new Error("Mot de passe : 6 caractères minimum");
+        c[cle] = nouveau; ecrireLocal("mdc_demo_comptes", c); return;
+      }
+      const { error } = await client.rpc("changer_mot_de_passe", { p_prenom: prenom, p_ancien: ancien, p_nouveau: nouveau });
+      if (error) throw new Error(error.message);
     },
 
     /** Vérifie le code promo côté serveur. En démo, tout code non vide est accepté. */

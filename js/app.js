@@ -444,7 +444,8 @@
       + (corb.map(l => htmlLivrable(l, { corbeille: true })).join("") || '<p class="vide">La corbeille est vide.</p>');
     const verbes = { ajout: "a ajouté", modification: "a modifié", suppression: "a mis à la corbeille", restauration: "a restauré",
       "ajout pièce jointe": "a joint un fichier à", "suppression pièce jointe": "a retiré la pièce jointe",
-      "suppression définitive (admin)": "🛡️ a supprimé définitivement", "corbeille vidée (admin)": "🛡️ a vidé la corbeille" };
+      "suppression définitive (admin)": "🛡️ a supprimé définitivement", "corbeille vidée (admin)": "🛡️ a vidé la corbeille",
+      "mot de passe réinitialisé (admin)": "🛡️ a réinitialisé le mot de passe de" };
     $("#liste-historique").innerHTML = etat.historique.map(h => `<li><strong>${esc(h.prenom)}</strong> ${verbes[h.action] || esc(h.action)}
       « ${esc(h.titre)} » <time>${fmt(new Date(h.le), { dateStyle: "short", timeStyle: "short" })}</time></li>`).join("") || '<li class="vide">Aucune modification pour l\'instant.</li>';
   }
@@ -513,6 +514,10 @@
     $("#form-admin").hidden = !autorise || estAdmin();
     $("#btn-admin-off").hidden = !estAdmin();
     $("#erreur-admin").hidden = true; $("#admin-code").value = "";
+    $("#form-changer-mdp").reset(); $("#form-changer-mdp .erreur").hidden = true; $("#bloc-changer-mdp").open = false;
+    $("#bloc-reinit").hidden = !estAdmin(); $("#bloc-reinit").open = false;
+    $("#form-reinit").cible.innerHTML = '<option value="">— Prénom —</option>'
+      + etat.prenoms.filter(p => !memeNom(p, moi())).map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join("");
     $("#dlg-moi").showModal();
   }
 
@@ -535,11 +540,13 @@
   }
 
   /**
-   * Connexion : renvoie {code, prenom}. Demandée une seule fois puis mémorisée sur l'appareil.
-   * Tout le monde se connecte avec son prénom et le même code de groupe (vérifié par le serveur).
+   * Connexion : renvoie {code, prenom}, mémorisé sur l'appareil.
+   * - Prénom qui a déjà son mot de passe → on demande ce mot de passe.
+   * - Prénom sans mot de passe → code du groupe + choix d'un mot de passe personnel.
+   * Ensuite, « code » contient le mot de passe personnel (vérifié par le serveur à chaque action).
    */
   let connexionEnCours = null;
-  function autorisation() {
+  function autorisation(message = "") {
     const memo = lireLocal("mdc_auth", null);
     if (memo && memo.code && memo.prenom) return Promise.resolve(memo);
     if (connexionEnCours) return connexionEnCours;
@@ -552,30 +559,86 @@
     const connu = etat.prenoms.find(p => memeNom(p, precedent));
     form.prenom.value = connu || (precedent ? "__autre" : "");
     form.prenom_libre.value = connu ? "" : precedent;
-    $("#champ-prenom-libre").hidden = form.prenom.value !== "__autre";
-    form.code.value = "";
+    form.code.value = form.mdp.value = form.mdp2.value = "";
     $("#erreur-code").hidden = true;
     dlg.oncancel = e => e.preventDefault(); // la connexion est obligatoire
+
+    const prenomChoisi = () => (form.prenom.value === "__autre" ? form.prenom_libre.value : form.prenom.value).trim();
+    let mode = null; // "existant" (a déjà un mot de passe) | "nouveau" (doit le créer)
+    let compteur = 0;
+    async function majMode() {
+      $("#champ-prenom-libre").hidden = form.prenom.value !== "__autre";
+      const prenom = prenomChoisi(), n = ++compteur;
+      mode = null;
+      ["#champ-code-groupe", "#champ-mdp", "#champ-mdp2"].forEach(x => ($(x).hidden = true));
+      $("#login-info").textContent = message;
+      if (!prenom) return;
+      let existe;
+      try { existe = await Donnees.compteExiste(prenom); } catch (e) { return erreur("Erreur réseau : " + e.message); }
+      if (n !== compteur) return; // l'étudiant a changé de prénom entre-temps
+      mode = existe ? "existant" : "nouveau";
+      $("#champ-mdp").hidden = false;
+      $("#champ-code-groupe").hidden = $("#champ-mdp2").hidden = existe;
+      $("#libelle-mdp").textContent = existe ? "Ton mot de passe *" : "Choisis ton mot de passe personnel * (6 caractères min.)";
+      form.mdp.autocomplete = existe ? "current-password" : "new-password";
+      $("#login-info").textContent = (message ? message + " " : "") + (existe
+        ? "Entre ton mot de passe personnel. Oublié ? Demande à Farid de le réinitialiser."
+        : "Première fois : entre le code du groupe et choisis ton mot de passe. Personne d'autre ne pourra utiliser ton prénom.");
+      $("#btn-connexion").textContent = existe ? "Se connecter" : "Créer mon mot de passe";
+    }
+    form.prenom.onchange = majMode;
+    let minuteurLibre;
+    form.prenom_libre.oninput = () => { clearTimeout(minuteurLibre); minuteurLibre = setTimeout(majMode, 400); };
+    majMode();
     dlg.showModal();
+
     connexionEnCours = new Promise(resolve => {
       form.onsubmit = async ev => {
         ev.preventDefault();
-        const prenom = (form.prenom.value === "__autre" ? form.prenom_libre.value : form.prenom.value).trim();
-        const code = form.code.value.trim();
+        $("#erreur-code").hidden = true;
+        const prenom = prenomChoisi(), mdp = form.mdp.value;
         if (!prenom) return erreur("Choisis ton prénom.");
-        if (!code) return erreur("Entre le code du groupe.");
+        if (!mode) return erreur("Un instant…");
         try {
-          if (!(await Donnees.verifierCode(code))) return erreur("Code incorrect.");
-        } catch (e) { return erreur("Erreur réseau : " + e.message); }
-        const auth = { prenom, code };
+          if (mode === "existant") {
+            if (!mdp) return erreur("Entre ton mot de passe.");
+            if (!(await Donnees.verifierIdentite(prenom, mdp))) return erreur("Mot de passe incorrect.");
+          } else {
+            if (!form.code.value.trim()) return erreur("Entre le code du groupe.");
+            if (mdp.length < 6) return erreur("Ton mot de passe doit faire au moins 6 caractères.");
+            if (mdp !== form.mdp2.value) return erreur("Les deux mots de passe ne sont pas identiques.");
+            await Donnees.creerMotDePasse(form.code.value.trim(), prenom, mdp);
+            toast("🔑 Mot de passe créé ! Garde-le bien, il te servira sur tes autres appareils.");
+          }
+        } catch (e) { return erreur(e.message); }
+        const auth = { prenom, code: mdp };
         ecrireLocal("mdc_auth", auth); ecrireLocal("mdc_prenom", prenom);
         dlg.close(); connexionEnCours = null;
         majEnteteMoi(); renderLivrables(); renderEspace();
-        if (etat.pushActif) initPush(); // l'abonnement suit le nouveau prénom
+        if (etat.pushActif) initPush(); // l'abonnement suit le prénom
         resolve(auth);
       };
     });
     return connexionEnCours;
+  }
+
+  /**
+   * Au démarrage : vérifie la connexion mémorisée. Si elle n'est plus valide (mot de passe changé),
+   * ou si l'étudiant n'a pas encore de mot de passe personnel, on lui redemande de se connecter.
+   */
+  async function verifierConnexion() {
+    const auth = lireLocal("mdc_auth", null);
+    if (!auth) return autorisation();
+    try {
+      if (!(await Donnees.compteExiste(auth.prenom))) {
+        ecrireLocal("mdc_auth", null); majEnteteMoi();
+        return autorisation("🔑 Nouveau : chacun choisit maintenant son mot de passe personnel.");
+      }
+      if (!(await Donnees.verifierIdentite(auth.prenom, auth.code))) {
+        ecrireLocal("mdc_auth", null); majEnteteMoi();
+        return autorisation("Ton mot de passe a changé : reconnecte-toi.");
+      }
+    } catch (e) { /* hors ligne : on garde la connexion mémorisée */ }
   }
 
   /** Exécute une écriture ; si le code a changé entre-temps, le redemande une fois. */
@@ -585,7 +648,7 @@
       if (!auth) return false;
       try { await action(auth); return true; }
       catch (e) {
-        if (e.codeInvalide) { ecrireLocal("mdc_auth", null); toast("Le code a changé : saisis le nouveau."); continue; }
+        if (e.codeInvalide) { ecrireLocal("mdc_auth", null); majEnteteMoi(); toast("Reconnecte-toi avec ton mot de passe."); continue; }
         toast("Erreur : " + e.message); return false;
       }
     }
@@ -877,7 +940,6 @@
       await recharger();
       toast("Fichier déposé ✔");
     });
-    $("#form-code").prenom.addEventListener("change", e => { $("#champ-prenom-libre").hidden = e.target.value !== "__autre"; });
   }
 
   // =====================================================================
@@ -1020,6 +1082,29 @@
       ecrireLocal("mdc_admin", code);
       $("#dlg-moi").close(); majEnteteMoi(); renderLivrables(); renderEspace();
       toast("🛡️ Mode admin activé");
+    });
+    $("#form-changer-mdp").addEventListener("submit", async e => {
+      e.preventDefault();
+      const f = e.target, err = f.querySelector(".erreur");
+      const montrer = m => { err.textContent = m; err.hidden = false; };
+      err.hidden = true;
+      if (f.nouveau.value.length < 6) return montrer("6 caractères minimum.");
+      if (f.nouveau.value !== f.nouveau2.value) return montrer("Les deux nouveaux mots de passe ne sont pas identiques.");
+      try { await Donnees.changerMotDePasse(moi(), f.ancien.value, f.nouveau.value); }
+      catch (x) { return montrer(x.message); }
+      ecrireLocal("mdc_auth", { prenom: moi(), code: f.nouveau.value });
+      $("#dlg-moi").close(); toast("🔑 Mot de passe changé ✔");
+    });
+    $("#form-reinit").addEventListener("submit", async e => {
+      e.preventDefault();
+      const cible = e.target.cible.value;
+      if (!cible) return;
+      if (!(await confirmer(`Réinitialiser le mot de passe de ${cible} ? Il devra en recréer un avec le code du groupe.`, "Réinitialiser"))) return;
+      try {
+        const ok = await Donnees.admin(lireLocal("mdc_admin", null), moi(), "admin_reinitialiser_mdp", { p_cible: cible });
+        toast(ok ? `🛡️ Mot de passe de ${cible} réinitialisé.` : `${cible} n'avait pas encore de mot de passe.`);
+        $("#dlg-moi").close();
+      } catch (x) { toast("Erreur : " + x.message); }
     });
     $("#btn-admin-off").addEventListener("click", () => {
       ecrireLocal("mdc_admin", null);
@@ -1200,7 +1285,7 @@
     renderTout();
     if (!etat.vuJusqua) { etat.vuJusqua = new Date().toISOString(); ecrireLocal("mdc_vu", etat.vuJusqua); }
     majEnteteMoi();
-    autorisation(); // connexion obligatoire (une seule fois par appareil)
+    verifierConnexion(); // connexion obligatoire (mot de passe personnel)
     initPush();
     await recharger();
   }

@@ -8,8 +8,11 @@ Application web pour le **groupe 1 (G1)** de la promo **MDC 2025-2027 (ISTEF)**.
 - **Planning** (du lundi au vendredi) : aujourd'hui / demain en haut, vues semaine / mois / liste, une couleur par matière,
   jours en entreprise grisés, CC et rendus affichés. **Touchez un cours** pour voir ce qu'il y a à rendre dans
   cette matière et **lui ajouter un devoir** (matière et date de la prochaine séance pré-remplies).
-- **Connexion** : à la première visite, chacun choisit **son prénom** dans la liste de la classe et entre **le code du groupe**
-  (le même pour tout le monde). C'est mémorisé sur l'appareil. Bouton 👤 en haut pour changer de prénom.
+- **Connexion avec mot de passe personnel** : la première fois, chacun choisit son prénom, entre **le code du groupe**
+  et **choisit son propre mot de passe**. Ensuite, seul ce mot de passe permet d'agir sous ce prénom (le code du groupe
+  ne suffit plus) : personne ne peut se faire passer pour quelqu'un d'autre. Mémorisé sur l'appareil.
+  Menu 👤 : changer son mot de passe, se déconnecter. **Mot de passe oublié** : l'admin le réinitialise (👤 → 🛡️),
+  puis la personne en recrée un avec le code du groupe.
 - **Ajout collaboratif** : tout le monde peut ajouter, modifier ou supprimer un devoir. Tout le monde voit les changements en temps réel.
   Chaque devoir affiche **« Ajouté par … »** (le prénom de la personne connectée qui l'a créé).
 - **Nouveaux devoirs** : bandeau « 🆕 X nouveaux devoirs depuis ta dernière visite » (jusqu'au clic sur « OK, vu »),
@@ -219,7 +222,7 @@ delete from public.livrables where supprime_le is not null and supprime_le < now
 Les prénoms listés dans `js/config.js` (`ADMINS: ["Farid"]`) peuvent activer le mode admin : 👤 en haut → code admin.
 Le code admin est **différent** du code du groupe et vérifié par la base (choisir le prénom « Farid » ne suffit pas).
 En mode admin (🛡️) : supprimer définitivement un devoir de la corbeille, **vider la corbeille**, supprimer n'importe quel
-complément, retirer quelqu'un d'un groupe ou supprimer un groupe. Ces actions sont notées dans l'historique.
+complément, retirer quelqu'un d'un groupe ou supprimer un groupe, **réinitialiser le mot de passe** d'un camarade. Ces actions sont notées dans l'historique.
 
 Définir ou changer le code admin (Supabase → SQL Editor) :
 ```sql

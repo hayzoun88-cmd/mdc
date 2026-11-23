@@ -18,7 +18,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="MDC G1">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="stylesheet" href="css/style.css?v=6">
 </head>
 <body>
   <!-- ===== En-tête ===== -->
@@ -157,17 +157,19 @@
     </form>
   </dialog>
 
-  <!-- ===== Fenêtre : connexion (prénom + code du groupe, une seule fois par appareil) ===== -->
+  <!-- ===== Fenêtre : connexion (prénom + mot de passe personnel) ===== -->
   <dialog id="dlg-code" class="dialogue">
     <form id="form-code" novalidate>
       <h2>Connexion 👋</h2>
-      <p class="aide">Choisis ton prénom et entre le code du groupe. Tu ne le feras qu'une fois sur cet appareil.</p>
       <label>Ton prénom *<select name="prenom" required></select></label>
       <label id="champ-prenom-libre" hidden>Écris ton prénom *<input name="prenom_libre" maxlength="40" autocomplete="given-name"></label>
-      <label>Code du groupe *<input name="code" required type="password" autocomplete="off"></label>
+      <p id="login-info" class="aide"></p>
+      <label id="champ-code-groupe" hidden>Code du groupe *<input name="code" type="password" autocomplete="off"></label>
+      <label id="champ-mdp" hidden><span id="libelle-mdp">Ton mot de passe *</span><input name="mdp" type="password" autocomplete="current-password"></label>
+      <label id="champ-mdp2" hidden>Retape ton mot de passe *<input name="mdp2" type="password" autocomplete="new-password"></label>
       <p id="erreur-code" class="erreur" hidden></p>
       <div class="actions">
-        <button type="submit" class="btn btn-principal">Se connecter</button>
+        <button type="submit" class="btn btn-principal" id="btn-connexion">Se connecter</button>
       </div>
     </form>
   </dialog>
@@ -222,6 +224,24 @@
       <button class="btn btn-principal">Activer</button>
     </form>
     <p id="erreur-admin" class="erreur" hidden></p>
+    <details id="bloc-changer-mdp" class="bloc-compte">
+      <summary>🔑 Changer mon mot de passe</summary>
+      <form id="form-changer-mdp" class="form-compte" novalidate>
+        <input name="ancien" type="password" placeholder="Mot de passe actuel" autocomplete="current-password" aria-label="Mot de passe actuel">
+        <input name="nouveau" type="password" placeholder="Nouveau mot de passe (6 caractères min.)" autocomplete="new-password" aria-label="Nouveau mot de passe">
+        <input name="nouveau2" type="password" placeholder="Retape le nouveau mot de passe" autocomplete="new-password" aria-label="Confirmation">
+        <button class="btn btn-principal btn-petit">Changer</button>
+        <p class="erreur" hidden></p>
+      </form>
+    </details>
+    <details id="bloc-reinit" class="bloc-compte" hidden>
+      <summary>🛡️ Réinitialiser le mot de passe d'un camarade</summary>
+      <form id="form-reinit" class="form-compte" novalidate>
+        <p class="aide">À utiliser si quelqu'un a oublié son mot de passe : il en recréera un avec le code du groupe.</p>
+        <select name="cible" aria-label="Prénom"></select>
+        <button class="btn btn-danger btn-petit">Réinitialiser</button>
+      </form>
+    </details>
     <div class="actions">
       <button type="button" class="btn" id="btn-admin-off" hidden>Quitter le mode admin</button>
       <button type="button" class="btn" id="btn-deconnexion">Se déconnecter</button>
@@ -248,8 +268,8 @@
 
   <!-- Bibliothèque Supabase (version figée) puis nos scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-  <script src="js/config.js?v=5"></script>
-  <script src="js/donnees.js?v=5"></script>
-  <script src="js/app.js?v=5"></script>
+  <script src="js/config.js?v=6"></script>
+  <script src="js/donnees.js?v=6"></script>
+  <script src="js/app.js?v=6"></script>
 </body>
 </html>
